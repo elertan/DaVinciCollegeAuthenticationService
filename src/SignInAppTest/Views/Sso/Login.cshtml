@@ -1,0 +1,59 @@
+﻿@using DaVinciCollegeAuthenticationService.Models
+@model DaVinciCollegeAuthenticationService.Models.Application
+
+@{
+    ViewBag.Title = "Login";
+    Layout = "_Layout";
+}
+
+<div class="row">
+    @if (Model != null)
+    {
+        <div class="col-md-8">
+            <section>
+                <form asp-controller="Sso" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+                    <h4>Log in om toegang te verlenen tot @Model.Name</h4>
+                    <hr/>
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group">
+                        @*<label asp-for="Email" class="col-md-2 control-label"></label>
+                            <div class="col-md-10">
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>*@
+                        <label class="col-md-2 control-label">DaVinci Nummer</label>
+                        <div class="col-md-10">
+                            <input name="userNumber" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Wachtwoord</label>
+                        @*<label asp-for="Password" class="col-md-2 control-label"></label>
+                            <div class="col-md-10">
+                                <input asp-for="Password" class="form-control" />
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>*@
+                        <div class="col-md-10">
+                            <input name="Password" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" class="btn btn-default">Toegang verlenen</button>
+                        </div>
+                    </div>
+                    @*<p>
+                            <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">Register as a new user?</a>
+                        </p>
+                        <p>
+                            <a asp-action="ForgotPassword">Forgot your password?</a>
+                        </p>*@
+                </form>
+            </section>
+        </div>
+    }
+    else
+    {
+        <h2>Dit is geen geldige login pagina.</h2>
+    }
+</div>

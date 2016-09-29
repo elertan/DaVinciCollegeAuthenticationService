@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-namespace SignInAppTest.Models
+namespace DaVinciCollegeAuthenticationService.Models
 {
     // Add profile data for application users by adding properties to the ApplicationUser class
     public class ApplicationUser : IdentityUser
     {
+        public string UserNumber { get; set; }
+        public bool IsTeacher { get; set; }
+        public List<Application> Applications { get; set; }
     }
 }
