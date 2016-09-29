@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using DaVinciCollegeAuthenticationService.Models;
+using DaVinciCollegeAuthenticationService.Models.ManageViewModels;
+using DaVinciCollegeAuthenticationService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using SignInAppTest.Models;
-using SignInAppTest.Models.ManageViewModels;
-using SignInAppTest.Services;
 
-namespace SignInAppTest.Controllers
+namespace DaVinciCollegeAuthenticationService.Controllers
 {
     [Authorize]
     public class ManageController : Controller

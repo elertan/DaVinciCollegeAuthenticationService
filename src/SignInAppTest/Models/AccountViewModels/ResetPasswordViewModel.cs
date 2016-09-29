@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace SignInAppTest.Models.AccountViewModels
+namespace DaVinciCollegeAuthenticationService.Models.AccountViewModels
 {
     public class ResetPasswordViewModel
     {
