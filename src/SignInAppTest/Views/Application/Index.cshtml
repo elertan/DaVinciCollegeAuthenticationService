@@ -1,4 +1,10 @@
-﻿<h1>Applicatie pagina</h1>
+﻿@model DaVinciCollegeAuthenticationService.Models.ApplicationViewModels.IndexViewModel
 
-
-<div class="jumbotron"></div>
+<h1>Applicatie pagina</h1>
+<div class="jumbotron">
+    <a class="btn btn-success" asp-controller="Application" asp-action="Create">Applicatie Toevoegen</a>
+    <hr />
+    <div style="height: 50px; background-color: lightgray;">
+        <p style="display:inline-block;">Speurtocht</p><p style="display:inline-block; float:right;">Bewerken</p><p style="display:inline-block; float:right;">Verwijder</p>
+    </div>
+</div>
