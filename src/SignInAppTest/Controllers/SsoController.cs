@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace DaVinciCollegeAuthenticationService.Controllers
 {
@@ -45,8 +46,11 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         public async Task<IActionResult> LoginPost(string userNumber, string password, string token)
         {
             Guid guid;
-            if (!Guid.TryParse(token, out guid)) return BadRequest();
-
+            if (!Guid.TryParse(token, out guid))
+            {
+                return BadRequest();
+            }
+            
             var app = await _context.Applications.FirstOrDefaultAsync(a => a.Token.Equals(guid));
             return RedirectPermanent(app.LoginCallbackUrl);
         }

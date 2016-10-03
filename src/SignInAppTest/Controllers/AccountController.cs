@@ -15,11 +15,11 @@ namespace DaVinciCollegeAuthenticationService.Controllers
     [Authorize]
     public class AccountController : Controller
     {
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ISmsSender _smsSender;
-        private readonly UserManager<ApplicationUser> _userManager;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
