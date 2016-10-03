@@ -5,8 +5,8 @@ namespace DaVinciCollegeAuthenticationService.Models.AccountViewModels
     public class LoginViewModel
     {
         [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        [Display(Name = "Studentnummer")]
+        public string UserNumber { get; set; }
 
         [Required]
         [DataType(DataType.Password)]

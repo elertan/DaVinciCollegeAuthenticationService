@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using DaVinciCollegeAuthenticationService.Models;
 using DaVinciCollegeAuthenticationService.Models.AccountViewModels;
@@ -8,30 +9,32 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 
 namespace DaVinciCollegeAuthenticationService.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IEmailProvider _emailProvider;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ISmsSender _smsSender;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            IEmailProvider emailProvider)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
+            _emailProvider = emailProvider;
             _logger = loggerFactory.CreateLogger<AccountController>();
         }
 
@@ -58,7 +61,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result =
-                    await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+                    await _signInManager.PasswordSignInAsync(model.UserNumber, model.Password, model.RememberMe, false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation(1, "User logged in.");
@@ -99,7 +102,11 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (!ModelState.IsValid) return View(model);
 
-            var user = new ApplicationUser {UserName = model.Email, Email = model.Email};
+            var user = new ApplicationUser
+            {
+                UserName = model.UserNumber,
+                Email = _emailProvider.GetEmailByUserNumber(model.UserNumber)
+            };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {

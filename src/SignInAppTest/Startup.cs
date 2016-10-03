@@ -54,6 +54,7 @@ namespace DaVinciCollegeAuthenticationService
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddSingleton<ITokenProvider, TokenProvider>();
+            services.AddSingleton<IEmailProvider, EmailProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
