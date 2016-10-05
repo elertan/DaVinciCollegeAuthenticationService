@@ -4,7 +4,17 @@
 <div class="jumbotron">
     <a class="btn btn-success" asp-controller="Application" asp-action="Create">Applicatie Toevoegen</a>
     <hr />
-    <div style="height: 50px; background-color: lightgray;">
-        <p style="display:inline-block;">Speurtocht</p><p style="display:inline-block; float:right;">Bewerken</p><p style="display:inline-block; float:right;">Verwijder</p>
-    </div>
+    @if (Model.Applications.Count > 0)
+    {
+        @foreach (var application in Model.Applications)
+        {
+            <div style="height: 50px; background-color: lightgray;">
+                <p style="display:inline-block;">@application.Name</p><a asp-controller="Application" asp-action="Update" asp-route-applicationId="@application.Id" class="btn btn-warning" style="display:inline-block; float:right;">Bewerken</a><a class="btn btn-danger" asp-controller="Application" asp-action="Delete" asp-route-applicationId="@application.Id" style="display:inline-block; float:right;">Verwijder</a>
+            </div>
+        }
+    }
+    else
+    {
+	      <p>Geen applicaties</p>   
+	}
 </div>

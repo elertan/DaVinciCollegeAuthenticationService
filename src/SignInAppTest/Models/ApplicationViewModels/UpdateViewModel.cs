@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace DaVinciCollegeAuthenticationService.Models.ApplicationViewModels
 {
-    public class IndexViewModel
+    public class UpdateViewModel
     {
-        public ICollection<Application> Applications { get; set; }
+        public Application Application { get; set; }
     }
 }
