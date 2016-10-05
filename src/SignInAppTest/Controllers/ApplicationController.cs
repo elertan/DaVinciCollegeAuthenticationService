@@ -29,13 +29,14 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
-            return View(new IndexViewModel() { Applications = user.Applications });
+            var applications = _context.Applications.Where(a => a.User == user).ToList();
+            return View(new IndexViewModel() { Applications = applications });
         }
 
 
         public IActionResult Create()
         {
-            return View(new CreateViewModel());
+            return View(new CreateViewModel() { });
         }
 
         [HttpPost]
@@ -45,16 +46,53 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userManager.GetUserAsync(User);
-                var application = new Application() { Name = model.Name, LoginCallbackUrl = model.LoginCallbackUrl };
+                var application = new Application() { Name = model.Name, LoginCallbackUrl = model.LoginCallbackUrl, Token = Guid.NewGuid() };
                 _context.Applications.Add(application);
                 var contextUser = _context.ApplicationUser.First(u => u.Id == user.Id);
                 contextUser.Applications.Add(application);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(ApplicationController.Create));
+                return RedirectToAction(nameof(ApplicationController.Index));
             }
 
             return View(model);
+        }
+
+        public async Task<IActionResult> Delete(int applicationId)
+        {
+            if (ModelState.IsValid)
+            {
+                var applicationToRemove = _context.Applications.FirstOrDefault(a => a.Id == applicationId);
+                if (applicationToRemove != null)
+                {
+                    var user = await _userManager.GetUserAsync(User);
+                    if (user == applicationToRemove.User)
+                    {
+                        _context.Applications.Remove(_context.Applications.First(a => a.Id == applicationId));
+                        await _context.SaveChangesAsync();
+                    }
+                }
+            }
+
+            return RedirectToAction(nameof(ApplicationController.Index));
+        }
+
+        public async Task<IActionResult> Update(int applicationId)
+        {
+            if (ModelState.IsValid)
+            {
+                var applicationToUpdate = _context.Applications.FirstOrDefault(a => a.Id == applicationId);
+                if (applicationToUpdate != null)
+                {
+                    var user = await _userManager.GetUserAsync(User);
+                    if (user == applicationToUpdate.User)
+                    {
+                        return View(new UpdateViewModel() { Application = applicationToUpdate });
+                    }
+                }
+            }
+
+            return RedirectToAction(nameof(ApplicationController.Index));
         }
     }
 }
