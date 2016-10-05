@@ -1,39 +1,40 @@
 ﻿@using DaVinciCollegeAuthenticationService.Models.ManageViewModels
 @model DaVinciCollegeAuthenticationService.Models.ManageViewModels.IndexViewModel
 @{
-    ViewData["Title"] = "Manage your account";
+    ViewData["Title"] = "Beheer jouw account";
 }
 
 <h2>@ViewData["Title"].</h2>
 <p class="text-success">@ViewData["StatusMessage"]</p>
 
 <div>
-    <h4>Change your account settings</h4>
+    <h4>Verander jouw account instellingen</h4>
     <hr />
     <dl class="dl-horizontal">
-        <dt>Password:</dt>
+        <dt>Wachtwoord:</dt>
         <dd>
             @if (Model.HasPassword)
             {
-                <a asp-controller="Manage" asp-action="ChangePassword" class="btn-bracketed">Change</a>
+                <a asp-controller="Manage" asp-action="ChangePassword" class="btn-bracketed">Aanpassen</a>
             }
             else
             {
-                <a asp-controller="Manage" asp-action="SetPassword" class="btn-bracketed">Create</a>
+                <a asp-controller="Manage" asp-action="SetPassword" class="btn-bracketed">Toevoegen</a>
             }
         </dd>
-        <dt>External Logins:</dt>
+        @*<dt>External Logins:</dt>
         <dd>
 
             @Model.Logins.Count <a asp-controller="Manage" asp-action="ManageLogins" class="btn-bracketed">Manage</a>
-        </dd>
-        <dt>Phone Number:</dt>
+        </dd>*@
+        <dt>Telefoonnummer:</dt>
         <dd>
-            <p>
+            <p>n.v.t.</p>
+            @*<p>
                 Phone Numbers can used as a second factor of verification in two-factor authentication.
                 See <a href="http://go.microsoft.com/fwlink/?LinkID=532713">this article</a>
                 for details on setting up this ASP.NET application to support two-factor authentication using SMS.
-            </p>
+            </p>*@
             @*@(Model.PhoneNumber ?? "None")
                 @if (Model.PhoneNumber != null)
                 {
@@ -49,12 +50,13 @@
                 }*@
         </dd>
 
-        <dt>Two-Factor Authentication:</dt>
+        <dt>Two-Factor Authenticatie:</dt>
         <dd>
-            <p>
+            <p>n.v.t.</p>
+            @*<p>
                 There are no two-factor authentication providers configured. See <a href="http://go.microsoft.com/fwlink/?LinkID=532713">this article</a>
                 for setting up this application to support two-factor authentication.
-            </p>
+            </p>*@
             @*@if (Model.TwoFactor)
                 {
                     <form asp-controller="Manage" asp-action="DisableTwoFactorAuthentication" method="post" class="form-horizontal">
