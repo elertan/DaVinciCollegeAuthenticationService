@@ -1,3 +1,28 @@
 ﻿@model DaVinciCollegeAuthenticationService.Models.ApplicationViewModels.UpdateViewModel
 
-<h1>Applicatie: @Model.Application.Name</h1>
+<h1>Bewerken</h1>
+<div class="col-md-8">
+    <form asp-controller="Application" asp-action="Update" method="post" class="form-horizontal">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="Application.Name" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Application.Name" class="form-control" />
+                <span asp-validation-for="Application.Name" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Application.LoginCallbackUrl" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Application.LoginCallbackUrl" class="form-control" />
+                <span asp-validation-for="Application.LoginCallbackUrl" class="text-danger"></span>
+            </div>
+        </div>
+        <input asp-for="Application.Id" type="hidden"/>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-default">Aanpassen</button>
+            </div>
+        </div>
+    </form>
+</div>

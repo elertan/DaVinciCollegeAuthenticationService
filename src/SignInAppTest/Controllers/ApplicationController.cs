@@ -94,5 +94,31 @@ namespace DaVinciCollegeAuthenticationService.Controllers
 
             return RedirectToAction(nameof(ApplicationController.Index));
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(UpdateViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var applicationToUpdate = await _context.Applications.FirstOrDefaultAsync(a => a == model.Application);
+                if (applicationToUpdate != null)
+                {
+                    var user = await _userManager.GetUserAsync(User);
+                    if (user == applicationToUpdate.User)
+                    {
+                        applicationToUpdate.Name = model.Application.Name;
+                        applicationToUpdate.LoginCallbackUrl = applicationToUpdate.LoginCallbackUrl;
+
+                        _context.Applications.Update(applicationToUpdate);
+                        await _context.SaveChangesAsync();
+
+                        return RedirectToAction(nameof(ApplicationController.Index));
+                    }
+                }
+            }
+
+            return RedirectToAction(nameof(ApplicationController.Index));
+        }
     }
 }

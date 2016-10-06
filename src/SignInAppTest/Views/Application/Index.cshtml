@@ -9,7 +9,10 @@
         @foreach (var application in Model.Applications)
         {
             <div style="height: 50px; background-color: lightgray;">
-                <p style="display:inline-block;">@application.Name</p><a asp-controller="Application" asp-action="Update" asp-route-applicationId="@application.Id" class="btn btn-warning" style="display:inline-block; float:right;">Bewerken</a><a class="btn btn-danger" asp-controller="Application" asp-action="Delete" asp-route-applicationId="@application.Id" style="display:inline-block; float:right;">Verwijder</a>
+                <p style="display:inline-block;">@application.Name</p>
+                <a class="btn btn-danger" asp-controller="Application" asp-action="Delete" asp-route-applicationId="@application.Id" style="display:inline-block; float:right;">Verwijder</a>
+                <a asp-controller="Application" asp-action="Update" asp-route-applicationId="@application.Id" class="btn btn-warning" style="display:inline-block; float:right;">Bewerken</a> 
+                <input type="text" readonly="readonly" class="form-control" value="http://localhost/sso/login/@application.Token" />
             </div>
         }
     }
