@@ -2,19 +2,20 @@
 
 <div class="row">
     <div class="col-md-8">
+        <h2>Voeg een nieuwe applicatie toe</h2>
         <form asp-controller="Application" asp-action="Create" method="post" class="form-horizontal">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="col-md-2 control-label"></label>
                 <div class="col-md-10">
-                    <input asp-for="Name" class="form-control" />
+                    <input asp-for="Name" class="form-control"/>
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group">
                 <label asp-for="LoginCallbackUrl" class="col-md-2 control-label"></label>
                 <div class="col-md-10">
-                    <input asp-for="LoginCallbackUrl" class="form-control" />
+                    <input asp-for="LoginCallbackUrl" placeholder="Vb: http://www.mijnapp.nl/loginCallback" class="form-control"/>
                     <span asp-validation-for="LoginCallbackUrl" class="text-danger"></span>
                 </div>
             </div>
