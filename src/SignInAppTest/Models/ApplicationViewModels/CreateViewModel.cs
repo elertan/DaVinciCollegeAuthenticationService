@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DaVinciCollegeAuthenticationService.Models.ApplicationViewModels
 {
     public class CreateViewModel
     {
         [Required]
-        [Display(Name= "Naam")]
+        [Display(Name = "Naam")]
         public string Name { get; set; }
 
         [Required]
-        [Display(Name= "Login Callback Url")]
+        [DataType(DataType.Url)]
+        [Display(Name = "Login Callback Url")]
         public string LoginCallbackUrl { get; set; }
     }
 }

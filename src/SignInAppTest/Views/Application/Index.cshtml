@@ -8,8 +8,10 @@
     {
         @foreach (var application in Model.Applications)
         {
-            <div style="height: 50px; background-color: lightgray;">
-                <p style="display:inline-block;">@application.Name</p><a asp-controller="Application" asp-action="Update" asp-route-applicationId="@application.Id" class="btn btn-warning" style="display:inline-block; float:right;">Bewerken</a><a class="btn btn-danger" asp-controller="Application" asp-action="Delete" asp-route-applicationId="@application.Id" style="display:inline-block; float:right;">Verwijder</a>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <p>@application.Name</p><a asp-controller="Application" asp-action="Update" asp-route-applicationId="@application.Id" class="btn btn-warning" style="float:right;">Bewerken</a><a class="btn btn-danger" asp-controller="Application" asp-action="Delete" asp-route-applicationId="@application.Id" style="float:right;">Verwijder</a>
+                </div>
             </div>
         }
     }

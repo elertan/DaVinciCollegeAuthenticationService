@@ -63,39 +63,34 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             return View(model);
         }
 
-        //[Route("delete/{applicatio}")]
+        [Route("application/delete/{applicationId}")]
         public async Task<IActionResult> Delete(int applicationId)
         {
-            if (ModelState.IsValid)
-            {
-                var applicationToRemove = _context.Applications.FirstOrDefault(a => a.Id == applicationId);
-                if (applicationToRemove != null)
-                {
-                    var user = await _userManager.GetUserAsync(User);
-                    if (user == applicationToRemove.User)
-                    {
-                        _context.Applications.Remove(_context.Applications.First(a => a.Id == applicationId));
-                        await _context.SaveChangesAsync();
-                    }
-                }
-            }
+            if (!ModelState.IsValid) return RedirectToAction(nameof(Index));
+
+            var applicationToRemove = _context.Applications.FirstOrDefault(a => a.Id == applicationId);
+            if (applicationToRemove == null) return RedirectToAction(nameof(Index));
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user != applicationToRemove.User) return RedirectToAction(nameof(Index));
+
+            _context.Applications.Remove(_context.Applications.First(a => a.Id == applicationId));
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
-        [Route("update/{applicationId}")]
+        [Route("application/update/{applicationId}")]
         public async Task<IActionResult> Update(int applicationId)
         {
-            if (ModelState.IsValid)
-            {
-                var applicationToUpdate = _context.Applications.FirstOrDefault(a => a.Id == applicationId);
-                if (applicationToUpdate != null)
-                {
-                    var user = await _userManager.GetUserAsync(User);
-                    if (user == applicationToUpdate.User)
-                        return View(new UpdateViewModel {Application = applicationToUpdate});
-                }
-            }
+            if (!ModelState.IsValid) return RedirectToAction(nameof(Index));
+
+            var applicationToUpdate = _context.Applications.FirstOrDefault(a => a.Id == applicationId);
+
+            if (applicationToUpdate == null) return RedirectToAction(nameof(Index));
+            var user = await _userManager.GetUserAsync(User);
+            if (user == applicationToUpdate.User)
+                return View(new UpdateViewModel {Application = applicationToUpdate});
 
             return RedirectToAction(nameof(Index));
         }
