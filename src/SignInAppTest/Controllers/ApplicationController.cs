@@ -8,6 +8,7 @@ using DaVinciCollegeAuthenticationService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DaVinciCollegeAuthenticationService.Controllers
 {
@@ -83,11 +84,17 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         [Route("application/update/{applicationId}")]
         public async Task<IActionResult> Update(int applicationId)
         {
-            if (!ModelState.IsValid) return RedirectToAction(nameof(Index));
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction(nameof(Index));
+            }
 
             var applicationToUpdate = _context.Applications.FirstOrDefault(a => a.Id == applicationId);
 
-            if (applicationToUpdate == null) return RedirectToAction(nameof(Index));
+            if (applicationToUpdate == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
             var user = await _userManager.GetUserAsync(User);
             if (user == applicationToUpdate.User)
                 return View(new UpdateViewModel {Application = applicationToUpdate});
@@ -97,6 +104,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("application/update/{applicationId}")]
         public async Task<IActionResult> Update(UpdateViewModel model)
         {
             if (ModelState.IsValid)
