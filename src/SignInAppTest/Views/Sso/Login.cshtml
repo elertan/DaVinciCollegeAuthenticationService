@@ -1,5 +1,5 @@
 ﻿@using DaVinciCollegeAuthenticationService.Models
-@model DaVinciCollegeAuthenticationService.Models.Application
+@model DaVinciCollegeAuthenticationService.Models.SsoViewModels.LoginViewModel
 
 @{
     ViewBag.Title = "Login";
@@ -13,7 +13,8 @@
             <section>
                 <form asp-controller="Sso" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
                     @Html.AntiForgeryToken()
-                    <h4>Log in om toegang te verlenen tot @Model.Name</h4>
+                    <input type="hidden" name="appSession" value="@Model.ApplicationSession" />
+                    <h4>Log in om toegang te verlenen tot @Model.Application.Name</h4>
                     <hr/>
                     <div asp-validation-summary="All" class="text-danger"></div>
                     <div class="form-group">
