@@ -32,7 +32,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             var user = await _userManager.GetUserAsync(User);
             var applications = _context.Applications.Where(a => a.User == user).ToList();
             var domainName = Request.Host + (Request.Host.Port != null ? "" : ":" + Request.Host.Port);
-            return View(new IndexViewModel { DomainName= domainName, Applications = applications });
+            return View(new IndexViewModel {DomainName = domainName, Applications = applications});
         }
 
 
@@ -52,7 +52,8 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                 {
                     Name = model.Name,
                     LoginCallbackUrl = model.LoginCallbackUrl,
-                    Token = Guid.NewGuid()
+                    Token = Guid.NewGuid(),
+                    Secret = model.Secret
                 };
                 _context.Applications.Add(application);
                 var contextUser = _context.ApplicationUser.First(u => u.Id == user.Id);
@@ -88,13 +89,20 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             if (!ModelState.IsValid)
                 return RedirectToAction(nameof(Index));
 
-            var applicationToUpdate = _context.Applications.FirstOrDefault(a => a.Id == applicationId);
+            var app = _context.Applications.FirstOrDefault(a => a.Id == applicationId);
 
-            if (applicationToUpdate == null)
+            if (app == null)
                 return RedirectToAction(nameof(Index));
             var user = await _userManager.GetUserAsync(User);
-            if (user == applicationToUpdate.User)
-                return View(new UpdateViewModel {Application = applicationToUpdate});
+            if (user == app.User)
+                return
+                    View(new UpdateViewModel
+                    {
+                        Name = app.Name,
+                        Secret = app.Secret,
+                        LoginCallbackUrl = app.LoginCallbackUrl,
+                        Token = app.Token.ToString()
+                    });
 
             return RedirectToAction(nameof(Index));
         }
@@ -104,18 +112,19 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         [Route("application/update/{applicationId}")]
         public async Task<IActionResult> Update(UpdateViewModel model)
         {
-            if (!ModelState.IsValid) return RedirectToAction(nameof(Index));
+            if (!ModelState.IsValid) return View(model);
 
-            var applicationToUpdate = await _context.Applications.FirstOrDefaultAsync(a => a == model.Application);
-            if (applicationToUpdate == null) return RedirectToAction(nameof(Index));
+            var app = await _context.Applications.FirstOrDefaultAsync(a => a.Token.Equals(Guid.Parse(model.Token)));
+            if (app == null) return RedirectToAction(nameof(Index));
 
             var user = await _userManager.GetUserAsync(User);
-            if (user != applicationToUpdate.User) return RedirectToAction(nameof(Index));
+            if (user != app.User) return RedirectToAction(nameof(Index));
 
-            applicationToUpdate.Name = model.Application.Name;
-            applicationToUpdate.LoginCallbackUrl = applicationToUpdate.LoginCallbackUrl;
+            app.Name = model.Name;
+            app.LoginCallbackUrl = app.LoginCallbackUrl;
+            app.Secret = model.Secret;
 
-            _context.Applications.Update(applicationToUpdate);
+            _context.Applications.Update(app);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));

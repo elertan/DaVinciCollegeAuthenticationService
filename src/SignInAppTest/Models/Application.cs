@@ -9,7 +9,15 @@ namespace DaVinciCollegeAuthenticationService.Models
         public virtual ApplicationUser User { get; set; }
 
         public int Id { get; set; }
+
+        [MinLength(5)]
+        [MaxLength(100)]
         public string Name { get; set; }
+
+        [Display(Name = "Secret Code")]
+        [MinLength(5)]
+        [MaxLength(100)]
+        public string Secret { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Token { get; set; }
