@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http;
 using System.Collections.Generic;
+using System.Text;
+using Jose;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace DaVinciCollegeAuthenticationService.Controllers
 {
@@ -63,17 +66,22 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                 return RedirectToAction("Login", new {token, appSession});
             }
 
-            using (var client = new HttpClient())
+            var payload = new Dictionary<string, object>()
             {
-                var content = new FormUrlEncodedContent(new[]
-                {
-                    new KeyValuePair<string, string>("AppSession", appSession)
-                });
+                { "userNumber", userNumber }
+            };
 
-                var httpResult = await client.PostAsync(app.LoginCallbackUrl, content);
-            }
+            var secretKey = Encoding.UTF8.GetBytes(app.Secret);
+            string jwt = JWT.Encode(payload, secretKey, JwsAlgorithm.HS256);
 
-            return RedirectPermanent(app.LoginCallbackUrl);
+            var parametersToAdd = new Dictionary<string, string>()
+            {
+                { "token", jwt },
+                { "appSession", appSession },
+            };
+
+            var url = QueryHelpers.AddQueryString(app.LoginCallbackUrl, parametersToAdd);
+            return RedirectPermanent(url);
         }
 
         [HttpPost]

@@ -1,4 +1,4 @@
-﻿{
+{
   "userSecretsId": "aspnet-SignInAppTest-e35c44c0-9c7d-4b85-8443-a1dceed19e7c",
 
   "dependencies": {
@@ -40,10 +40,11 @@
       "version": "1.0.0-preview2-final",
       "type": "build"
     },
-    "Microsoft.VisualStudio.Web.CodeGenerators.Mvc":  {
+    "Microsoft.VisualStudio.Web.CodeGenerators.Mvc": {
       "version": "1.0.0-preview2-final",
       "type": "build"
-    }
+    },
+    "jose-jwt": "2.0.2"
   },
 
   "tools": {
