@@ -36,22 +36,22 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         /// <param name="appSession"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        [Route("sso/login/{token}/{appSession}")]
-        public async Task<IActionResult> Login(string token, string appSession)
+        [Route("sso/login/{token}")]
+        public async Task<IActionResult> Login(string token)
         {
             Guid guid;
             if (!Guid.TryParse(token, out guid)) return View(null);
 
             var app = await _context.Applications.FirstOrDefaultAsync(a => a.Token.Equals(guid));
-            var model = new LoginViewModel {Application = app, ApplicationSession = appSession};
+            var model = new LoginViewModel {Application = app};
             return _signInManager.IsSignedIn(User) ? View("LoginContinue", model) : View(model);
         }
 
         [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("sso/login/{token}/{appSession}")]
-        public async Task<IActionResult> LoginPost(string userNumber, string password, string token, string appSession)
+        [Route("sso/login/{token}")]
+        public async Task<IActionResult> LoginPost(string userNumber, string password, string token)
         {
             Guid guid;
             if (!Guid.TryParse(token, out guid))
@@ -63,7 +63,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             if (!result.Succeeded)
             {
                 ModelState.AddModelError(string.Empty, "Inloggen mislukt.");
-                return RedirectToAction("Login", new {token, appSession});
+                return RedirectToAction("Login", new {token});
             }
 
             var payload = new Dictionary<string, object>()
@@ -76,8 +76,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
 
             var parametersToAdd = new Dictionary<string, string>()
             {
-                { "token", jwt },
-                { "appSession", appSession },
+                { "token", jwt }
             };
 
             var url = QueryHelpers.AddQueryString(app.LoginCallbackUrl, parametersToAdd);
@@ -87,7 +86,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("sso/loginContinue")]
-        public async Task<IActionResult> LoginContinue(string token, string appSession)
+        public async Task<IActionResult> LoginContinue(string token)
         {
             Guid guid;
             if (!Guid.TryParse(token, out guid))
@@ -100,10 +99,10 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("sso/logout")]
-        public async Task<IActionResult> Logout(string token, string appSession)
+        public async Task<IActionResult> Logout(string token)
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Login", new {token, appSession});
+            return RedirectToAction("Login", new {token});
         }
     }
 }
