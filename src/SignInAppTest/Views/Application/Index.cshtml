@@ -12,7 +12,7 @@
                     <p style="display:inline-block;">@application.Name</p>
                     <a class="btn btn-danger" asp-controller="Application" asp-action="Delete" asp-route-applicationId="@application.Id" style="display:inline-block; float:right;">Verwijder</a>
                     <a asp-controller="Application" asp-action="Update" asp-route-applicationId="@application.Id" class="btn btn-warning" style="display:inline-block; float:right;">Bewerken</a> 
-                    <input class="tokenText form-control" style="display:inline-block; 520px; max-width: 520px" type="text" readonly="readonly" value="http://@Model.DomainName/sso/login/@application.Token" />
+                    <input class="tokenText form-control" style="display:inline-block; 520px; max-width: 520px" type="text" readonly="readonly" value="http://@Model.DomainName/sso/login/@application.Token/SESSION_REFERRENCE" />
                     <buttton style="display:inline" class="btn btn-primary" id="copyBtn" onclick="copyToClipBoard(this)">Kopiëren</buttton>     
                 </div>
             </div>
