@@ -33,7 +33,6 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         ///     Provides a login page for the given app
         /// </summary>
         /// <param name="token">The token associated with the app</param>
-        /// <param name="appSession"></param>
         /// <returns></returns>
         [AllowAnonymous]
         [Route("sso/login/{token}")]
@@ -93,7 +92,22 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                 return BadRequest();
 
             var app = await _context.Applications.FirstOrDefaultAsync(a => a.Token.Equals(guid));
-            return RedirectPermanent(app.LoginCallbackUrl);
+
+            var payload = new Dictionary<string, object>()
+            {
+                { "userNumber", User.Identity.Name }
+            };
+
+            var secretKey = Encoding.UTF8.GetBytes(app.Secret);
+            string jwt = JWT.Encode(payload, secretKey, JwsAlgorithm.HS256);
+
+            var parametersToAdd = new Dictionary<string, string>()
+            {
+                { "token", jwt }
+            };
+
+            var url = QueryHelpers.AddQueryString(app.LoginCallbackUrl, parametersToAdd);
+            return RedirectPermanent(url);
         }
 
         [HttpPost]
