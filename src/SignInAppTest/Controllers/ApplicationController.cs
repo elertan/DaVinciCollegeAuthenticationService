@@ -31,7 +31,8 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             var applications = _context.Applications.Where(a => a.User == user).ToList();
-            return View(new IndexViewModel {Applications = applications});
+            var domainName = Request.Host + (Request.Host.Port != null ? "" : ":" + Request.Host.Port);
+            return View(new IndexViewModel { DomainName= domainName, Applications = applications });
         }
 
 
