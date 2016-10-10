@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http;
+using System.Collections.Generic;
 
 namespace DaVinciCollegeAuthenticationService.Controllers
 {
@@ -60,6 +62,17 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                 ModelState.AddModelError(string.Empty, "Inloggen mislukt.");
                 return RedirectToAction("Login", new {token, appSession});
             }
+
+            using (var client = new HttpClient())
+            {
+                var content = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("AppSession", appSession)
+                });
+
+                var httpResult = await client.PostAsync(app.LoginCallbackUrl, content);
+            }
+
             return RedirectPermanent(app.LoginCallbackUrl);
         }
 
