@@ -85,16 +85,12 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         public async Task<IActionResult> Update(int applicationId)
         {
             if (!ModelState.IsValid)
-            {
                 return RedirectToAction(nameof(Index));
-            }
 
             var applicationToUpdate = _context.Applications.FirstOrDefault(a => a.Id == applicationId);
 
             if (applicationToUpdate == null)
-            {
                 return RedirectToAction(nameof(Index));
-            }
             var user = await _userManager.GetUserAsync(User);
             if (user == applicationToUpdate.User)
                 return View(new UpdateViewModel {Application = applicationToUpdate});
@@ -107,26 +103,21 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         [Route("application/update/{applicationId}")]
         public async Task<IActionResult> Update(UpdateViewModel model)
         {
-            if (ModelState.IsValid)
-            {
-                var applicationToUpdate = await _context.Applications.FirstOrDefaultAsync(a => a == model.Application);
-                if (applicationToUpdate != null)
-                {
-                    var user = await _userManager.GetUserAsync(User);
-                    if (user == applicationToUpdate.User)
-                    {
-                        applicationToUpdate.Name = model.Application.Name;
-                        applicationToUpdate.LoginCallbackUrl = applicationToUpdate.LoginCallbackUrl;
+            if (!ModelState.IsValid) return RedirectToAction(nameof(Index));
 
-                        _context.Applications.Update(applicationToUpdate);
-                        await _context.SaveChangesAsync();
+            var applicationToUpdate = await _context.Applications.FirstOrDefaultAsync(a => a == model.Application);
+            if (applicationToUpdate == null) return RedirectToAction(nameof(Index));
 
-                        return RedirectToAction(nameof(ApplicationController.Index));
-                    }
-                }
-            }
+            var user = await _userManager.GetUserAsync(User);
+            if (user != applicationToUpdate.User) return RedirectToAction(nameof(Index));
 
-            return RedirectToAction(nameof(ApplicationController.Index));
+            applicationToUpdate.Name = model.Application.Name;
+            applicationToUpdate.LoginCallbackUrl = applicationToUpdate.LoginCallbackUrl;
+
+            _context.Applications.Update(applicationToUpdate);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

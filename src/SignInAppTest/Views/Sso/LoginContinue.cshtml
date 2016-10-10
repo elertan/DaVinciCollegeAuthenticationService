@@ -1,0 +1,33 @@
+﻿@using DaVinciCollegeAuthenticationService.Models
+@model DaVinciCollegeAuthenticationService.Models.Application
+
+@{
+    ViewBag.Title = "Toegang Verlenen";
+    Layout = "_Layout";
+}
+
+<div class="row">
+    @if (Model != null)
+    {
+        <div class="col-md-8">
+            <section>
+                <form asp-controller="Sso" asp-action="LoginContinue" method="post" class="form-horizontal">
+                    @Html.AntiForgeryToken()
+                    <h4>Toegang verlenen tot @Model.Name</h4>
+                    <input type="hidden" name="token" value="@Model.Token"/>
+                    <input type="submit" class="btn btn-primary" value="Doorgaan als @User.Identity.Name">
+                </form>
+                <div style="margin: 20px;"></div>
+                <form asp-controller="Sso" asp-action="Logout" method="post" class="form-horizontal">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="token" value="@Model.Token" />
+                    <input type="submit" class="btn btn-default" value="Dit ben ik niet" />
+                </form>
+            </section>
+        </div>
+    }
+    else
+    {
+        <h2>Dit is geen geldige login pagina.</h2>
+    }
+</div>

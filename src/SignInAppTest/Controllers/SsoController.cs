@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace DaVinciCollegeAuthenticationService.Controllers
 {
@@ -37,22 +36,50 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             if (!Guid.TryParse(token, out guid)) return View(null);
 
             var app = await _context.Applications.FirstOrDefaultAsync(a => a.Token.Equals(guid));
-            return View(app);
+            return _signInManager.IsSignedIn(User) ? View("LoginContinue", app) : View(app);
         }
 
         [AllowAnonymous]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Route("sso/login/{token}")]
         public async Task<IActionResult> LoginPost(string userNumber, string password, string token)
         {
             Guid guid;
             if (!Guid.TryParse(token, out guid))
-            {
                 return BadRequest();
+
+            var app = await _context.Applications.FirstOrDefaultAsync(a => a.Token.Equals(guid));
+
+            var result = await _signInManager.PasswordSignInAsync(userNumber, password, true, false);
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError(string.Empty, "Inloggen mislukt.");
+                return RedirectToAction("Login", new {token});
             }
-            
+            return RedirectPermanent(app.LoginCallbackUrl);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("sso/loginContinue")]
+        public async Task<IActionResult> LoginContinue(string token)
+        {
+            Guid guid;
+            if (!Guid.TryParse(token, out guid))
+                return BadRequest();
+
             var app = await _context.Applications.FirstOrDefaultAsync(a => a.Token.Equals(guid));
             return RedirectPermanent(app.LoginCallbackUrl);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("sso/logout")]
+        public async Task<IActionResult> Logout(string token)
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login", new {token});
         }
     }
 }
