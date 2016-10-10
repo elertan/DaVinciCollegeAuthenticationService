@@ -1,5 +1,4 @@
 ﻿@model DaVinciCollegeAuthenticationService.Models.ApplicationViewModels.IndexViewModel
-
 <h1>Applicatie pagina</h1>
 <div class="jumbotron">
     <a class="btn btn-success" asp-controller="Application" asp-action="Create">Applicatie Toevoegen</a>
@@ -13,7 +12,8 @@
                     <p style="display:inline-block;">@application.Name</p>
                     <a class="btn btn-danger" asp-controller="Application" asp-action="Delete" asp-route-applicationId="@application.Id" style="display:inline-block; float:right;">Verwijder</a>
                     <a asp-controller="Application" asp-action="Update" asp-route-applicationId="@application.Id" class="btn btn-warning" style="display:inline-block; float:right;">Bewerken</a> 
-                    <input type="text" readonly="readonly" class="form-control" value="http://localhost/sso/login/@application.Token" />
+                    <input class="tokenText form-control" style="display:inline-block; 520px; max-width: 520px" type="text" readonly="readonly" value="http://@Model.DomainName/sso/login/@application.Token" />
+                    <buttton style="display:inline" class="btn btn-primary" id="copyBtn" onclick="copyToClipBoard(this)">Kopiëren</buttton>     
                 </div>
             </div>
         }
@@ -23,3 +23,13 @@
 	      <p>Geen applicaties</p>   
 	}
 </div>
+
+<script>
+    function copyToClipBoard(btn)
+    {
+        var inputField = $(btn).parent().children(".tokenText");
+        inputField.select();
+        // Copy to the clipboard
+        document.execCommand('copy');
+    }
+</script>

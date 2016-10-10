@@ -5,5 +5,6 @@ namespace DaVinciCollegeAuthenticationService.Models.ApplicationViewModels
     public class IndexViewModel
     {
         public ICollection<Application> Applications { get; set; }
+        public string DomainName { get; set; }
     }
 }
