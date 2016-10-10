@@ -121,7 +121,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             if (user != app.User) return RedirectToAction(nameof(Index));
 
             app.Name = model.Name;
-            app.LoginCallbackUrl = app.LoginCallbackUrl;
+            app.LoginCallbackUrl = model.LoginCallbackUrl;
             app.Secret = model.Secret;
 
             _context.Applications.Update(app);
