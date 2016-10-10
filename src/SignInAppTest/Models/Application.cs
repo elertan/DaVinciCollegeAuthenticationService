@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DaVinciCollegeAuthenticationService.Models
@@ -13,6 +14,7 @@ namespace DaVinciCollegeAuthenticationService.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Token { get; set; }
 
+        [DataType(DataType.Url)]
         public string LoginCallbackUrl { get; set; }
     }
 }
