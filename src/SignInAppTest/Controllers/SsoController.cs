@@ -1,17 +1,16 @@
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using DaVinciCollegeAuthenticationService.Data;
 using DaVinciCollegeAuthenticationService.Models;
 using DaVinciCollegeAuthenticationService.Models.SsoViewModels;
+using Jose;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Net.Http;
-using System.Collections.Generic;
-using System.Text;
-using Jose;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace DaVinciCollegeAuthenticationService.Controllers
 {
@@ -65,17 +64,17 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                 return RedirectToAction("Login", new {token});
             }
 
-            var payload = new Dictionary<string, object>()
+            var payload = new Dictionary<string, object>
             {
-                { "userNumber", userNumber }
+                {"userNumber", userNumber}
             };
 
             var secretKey = Encoding.UTF8.GetBytes(app.Secret);
-            string jwt = JWT.Encode(payload, secretKey, JwsAlgorithm.HS256);
+            var jwt = JWT.Encode(payload, secretKey, JwsAlgorithm.HS256);
 
-            var parametersToAdd = new Dictionary<string, string>()
+            var parametersToAdd = new Dictionary<string, string>
             {
-                { "token", jwt }
+                {"token", jwt}
             };
 
             var url = QueryHelpers.AddQueryString(app.LoginCallbackUrl, parametersToAdd);
@@ -93,17 +92,17 @@ namespace DaVinciCollegeAuthenticationService.Controllers
 
             var app = await _context.Applications.FirstOrDefaultAsync(a => a.Token.Equals(guid));
 
-            var payload = new Dictionary<string, object>()
+            var payload = new Dictionary<string, object>
             {
-                { "userNumber", User.Identity.Name }
+                {"userNumber", User.Identity.Name}
             };
 
             var secretKey = Encoding.UTF8.GetBytes(app.Secret);
-            string jwt = JWT.Encode(payload, secretKey, JwsAlgorithm.HS256);
+            var jwt = JWT.Encode(payload, secretKey, JwsAlgorithm.HS256);
 
-            var parametersToAdd = new Dictionary<string, string>()
+            var parametersToAdd = new Dictionary<string, string>
             {
-                { "token", jwt }
+                {"token", jwt}
             };
 
             var url = QueryHelpers.AddQueryString(app.LoginCallbackUrl, parametersToAdd);

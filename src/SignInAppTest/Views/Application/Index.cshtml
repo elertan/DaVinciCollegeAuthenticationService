@@ -10,6 +10,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     <p style="display:inline-block;">@application.Name</p>
+                    <hr />
                     <a class="btn btn-danger" asp-controller="Application" asp-action="Delete" asp-route-applicationId="@application.Id" style="display:inline-block; float:right;">Verwijder</a>
                     <a asp-controller="Application" asp-action="Update" asp-route-applicationId="@application.Id" class="btn btn-warning" style="display:inline-block; float:right;">Bewerken</a> 
                     <input class="tokenText form-control" style="display:inline-block; max-width: 520px" type="text" readonly="readonly" value="http://@Model.DomainName/sso/login/@application.Token" />
