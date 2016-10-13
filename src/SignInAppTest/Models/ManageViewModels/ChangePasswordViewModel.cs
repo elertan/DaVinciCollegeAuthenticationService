@@ -6,18 +6,18 @@ namespace DaVinciCollegeAuthenticationService.Models.ManageViewModels
     {
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "Current password")]
+        [Display(Name = "Huidig wachtwoord")]
         public string OldPassword { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
-        [Display(Name = "New password")]
+        [Display(Name = "Nieuw wachtwoord")]
         public string NewPassword { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm new password")]
-        [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+        [Display(Name = "Nieuw wachtwoord opnieuw")]
+        [Compare("NewPassword", ErrorMessage = "Het nieuwe wachtwoord komt niet overeen met het opnieuw ingevulde veld.")]
         public string ConfirmPassword { get; set; }
     }
 }

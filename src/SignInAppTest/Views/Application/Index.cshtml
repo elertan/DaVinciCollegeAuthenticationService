@@ -1,36 +1,30 @@
 ﻿@model DaVinciCollegeAuthenticationService.Models.ApplicationViewModels.IndexViewModel
-<h1>Applicatie pagina</h1>
+<h1><i class="fa fa-rocket fa-fw" aria-hidden="true"></i>Applicaties</h1>
 <div class="jumbotron">
-    <a class="btn btn-success" asp-controller="Application" asp-action="Create">Applicatie Toevoegen</a>
+    <a class="btn btn-success" asp-controller="Application" asp-action="Create"><i class="fa fa-plus fa-fw" aria-hidden="true"></i>Applicatie Toevoegen</a>
     <hr />
     @if (Model.Applications.Count > 0)
     {
         @foreach (var application in Model.Applications)
         {
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <p style="display:inline-block;">@application.Name</p>
-                    <hr />
-                    <a class="btn btn-danger" asp-controller="Application" asp-action="Delete" asp-route-applicationId="@application.Id" style="display:inline-block; float:right;">Verwijder</a>
-                    <a asp-controller="Application" asp-action="Update" asp-route-applicationId="@application.Id" class="btn btn-warning" style="display:inline-block; float:right;">Bewerken</a> 
-                    <input class="tokenText form-control" style="display:inline-block; max-width: 520px" type="text" readonly="readonly" value="http://@Model.DomainName/sso/login/@application.Token" />
-                    <button style="display:inline" class="btn btn-primary" id="copyBtn" onclick="copyToClipBoard(this)">Kopiëren</button>     
-                </div>
-            </div>
-        }
+             <div class="panel panel-default">
+                 <div class="panel-body">
+                     <p style="display:inline-block;">@application.Name</p>
+                     @*<hr />*@
+                     <button class="btn btn-danger" style="float:right;" onclick="removePrompt(function (confirmed) { if (confirmed) { window.location.replace('@Url.Action("Delete", new { Id = application.Id })'); } })"><i class="fa fa-remove fa-fw" aria-hidden="true"></i>Verwijder</button>
+                     <a asp-controller="Application" asp-action="Update" asp-route-applicationId="@application.Id" class="btn btn-warning" style="display:inline-block; float:right;"><i class="fa fa-edit fa-fw" aria-hidden="true"></i>Bewerken</a> 
+                     <div class="input-group">
+                         <input class="form-control ssoLoginLink" style="max-width: 520px" type="text" readonly="readonly" value="http://@Model.DomainName@Url.Action("Login", "Sso", new { Token = application.Token.ToString() })" />
+                         <span class="input-group-btn">
+                            <button class="btn btn-primary" style="float: left;" id="copyBtn" onclick="copyToClipBoard($(this).parent().parent().children('.ssoLoginLink'))" type="button"><i class="fa fa-clipboard fa-fw" aria-hidden="true"></i>Link Kopiëren</button>
+                        </span>
+                     </div>
+                 </div>
+             </div>
+         }
     }
     else
     {
-	      <p>Geen applicaties</p>   
-	}
-</div>
-
-<script>
-    function copyToClipBoard(btn)
-    {
-        var inputField = $(btn).parent().children(".tokenText");
-        inputField.select();
-        // Copy to the clipboard
-        document.execCommand('copy');
+        <p>Geen applicaties</p>   
     }
-</script>
+</div>

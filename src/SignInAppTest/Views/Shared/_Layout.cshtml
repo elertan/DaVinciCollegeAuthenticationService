@@ -6,11 +6,14 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DaVinci AS - @ViewData["Title"]</title>
+    <title>DaVinci AS</title>
 
     <environment names="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
+        @*<link rel="stylesheet" href="~/css/creative.css" />*@
+        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css"/>
+        <link rel="stylesheet" href="lib/bootstrap3-dialog/dist/css/bootstrap-dialog.css"/>
     </environment>
     <environment names="Staging,Production">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/css/bootstrap.min.css"
@@ -34,12 +37,13 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index"><i class="fa fa-home fa-fw" aria-hidden="true"></i>Home</a></li>
+                    <li><a asp-area="" asp-controller="StaticContent" asp-action="Documentation"><i class="fa fa-file-text fa-fw" aria-hidden="true"></i>Documentatie</a></li>
                     @*<li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
                     <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>*@
                     @if (SignInManager.IsSignedIn(User))
                     {
-                        <li><a asp-area="" asp-controller="Application" asp-action="Index">Applicaties</a></li>
+                        <li><a asp-area="" asp-controller="Application" asp-action="Index"><i class="fa fa-rocket fa-fw" aria-hidden="true"></i>Applicaties</a></li>
                     }
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
@@ -57,6 +61,8 @@
     <environment names="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="lib/bootstrap3-dialog/dist/js/bootstrap-dialog.js"></script>
+        @*<script src="~/js/creative.js"></script>*@
         <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>
     <environment names="Staging,Production">

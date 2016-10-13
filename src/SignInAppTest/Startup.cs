@@ -89,6 +89,11 @@ namespace DaVinciCollegeAuthenticationService
                 routes.MapRoute(
                     "default",
                     "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute(
+                    "404-PageNotFound",
+                    "{*url}",
+                    new {controller = "StaticContent", action = "PageNotFound"}
+                );
             });
         }
     }

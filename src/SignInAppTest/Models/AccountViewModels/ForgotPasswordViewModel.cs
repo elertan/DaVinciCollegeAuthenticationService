@@ -5,7 +5,7 @@ namespace DaVinciCollegeAuthenticationService.Models.AccountViewModels
     public class ForgotPasswordViewModel
     {
         [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        [Display(Name = "Gebruikernummer")]
+        public string UserNumber { get; set; }
     }
 }
