@@ -18,15 +18,48 @@
                 <li><a href="#account" data-toggle="tab">Account</a></li>
                 <li><a href="#applications" data-toggle="tab">Applicaties</a></li>
             </ul>
-            <div class="tab-content">
+            <div class="tab-content col-md-9">
                 <div class="tab-pane active" id="introduction">
-                    <p>Introductie</p>
+                    <p>
+                        In de documentatie wordt duidelijk omschreven hoe jullie met de DaVinci AuthService om kunnen gaan.
+                    </p>
+                    <p>
+                        Druk op een van de menu items om te beginnen.
+                    </p>
                 </div>
                 <div class="tab-pane" id="account">
-                    -
+                    <h3>Een account aanvragen</h3>
+                    <p>
+                        Als je een account wilt aanvragen of je bent het wachtwoord van jouw account vergeten, kan je dat via deze <a href="@Url.Action("ForgotPassword", "Account")">link</a> dat doen.
+                    </p>
                 </div>
                 <div class="tab-pane" id="applications">
-                    -
+                    <b>Applicaties kunnen alleen maar worden beheert door ingelogde gebruikers.</b>
+                    <h3>Uitleg Applicatie Data</h3>
+                    <p>
+                        <b>Naam</b> dit is de naam van jouw applicatie! Niet meer en niet minder.
+                    </p>
+                    <p>
+                        <b>Secret Code</b> dit is de sleutel die jij verzint voor jouw applicatie. Met deze sleutel kan je de geëncrypte gebruiker gegevens de wij sturen na een login verzoek decrypten. Deze sleutel is in het encoding formaat UTF-8 opgeslagen. Deze sleutel is erg belangrijk en moet niet in de handen van een ander terecht komen. Jij bent zelf aansprakelijk voor jouw sleutel.
+                    </p>
+                    <p>
+                        <b>Login Callback Url</b> dit is de url waar wij nadat de gebruiker via jouw SingleSignOn login link een inlogpoging heeft gedaan. Wij hem naar terugsturen met de geëncrypte gegevens zodat jij op jouw applicatie de gegevens kan afhandelen. <b>Let op!</b> De url moet worden ingevuld met http:// of https://.
+                    </p>
+                    <h3>Een nieuwe applicatie registreren</h3>
+                    <p>
+                        Om een nieuwe applicatie te registreren moet je als eerst op de knop Applicaties in het navigatie menu drukken.
+                    </p>
+                    <p>
+                        Vervolgens op de groene knop "Applicatie Toevoegen" drukken en dan de volgende informatie in te vullen.
+                    </p>
+                    <ul>
+                        <li>Naam</li>
+                        <li>Secret Code</li>
+                        <li>Login Callback Url</li>
+                    </ul>
+                    <p>
+                        Nadat deze informatie is ingevuld vervolgens drukken op toevoegen. Je hebt nu een nieuwe applicatie geregistreerd.
+                    </p>
                 </div>
             </div>
         </div>

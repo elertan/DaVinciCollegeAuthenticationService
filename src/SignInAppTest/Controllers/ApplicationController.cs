@@ -66,7 +66,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             return View(model);
         }
 
-        [Route("application/delete/{applicationId}")]
+        [Route("Application/Delete/{applicationId}")]
         public async Task<IActionResult> Delete(int applicationId)
         {
             if (!ModelState.IsValid) return RedirectToAction(nameof(Index));
@@ -83,7 +83,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Route("application/update/{applicationId}")]
+        [Route("Application/Update/{applicationId}")]
         public async Task<IActionResult> Update(int applicationId)
         {
             if (!ModelState.IsValid)
@@ -109,7 +109,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("application/update/{applicationId}")]
+        [Route("Application/Update/{applicationId}")]
         public async Task<IActionResult> Update(UpdateViewModel model)
         {
             if (!ModelState.IsValid) return View(model);

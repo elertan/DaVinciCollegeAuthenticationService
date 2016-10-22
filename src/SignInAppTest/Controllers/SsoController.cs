@@ -34,7 +34,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         /// <param name="token">The token associated with the app</param>
         /// <returns></returns>
         [AllowAnonymous]
-        [Route("sso/login/{token}")]
+        [Route("Sso/Login/{token}")]
         public async Task<IActionResult> Login(string token)
         {
             Guid guid;
@@ -48,7 +48,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("sso/login/{token}")]
+        [Route("Sso/Login/{token}")]
         public async Task<IActionResult> LoginPost(string userNumber, string password, string token)
         {
             Guid guid;
@@ -83,7 +83,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("sso/loginContinue")]
+        [Route("Sso/LoginContinue")]
         public async Task<IActionResult> LoginContinue(string token)
         {
             Guid guid;
@@ -91,6 +91,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                 return BadRequest();
 
             var app = await _context.Applications.FirstOrDefaultAsync(a => a.Token.Equals(guid));
+            if (app == null) return BadRequest();
 
             var payload = new Dictionary<string, object>
             {
@@ -111,11 +112,29 @@ namespace DaVinciCollegeAuthenticationService.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("sso/logout")]
+        [Route("Sso/Logout")]
         public async Task<IActionResult> Logout(string token)
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login", new {token});
+        }
+
+        public async Task<IActionResult> Cancel(string token)
+        {
+            Guid guid;
+            if (!Guid.TryParse(token, out guid))
+                return BadRequest();
+
+            var app = await _context.Applications.FirstOrDefaultAsync(a => a.Token.Equals(guid));
+            if (app == null) return BadRequest();
+
+            var parametersToAdd = new Dictionary<string, string>
+            {
+                {"err", "canceled"}
+            };
+
+            var url = QueryHelpers.AddQueryString(app.LoginCallbackUrl, parametersToAdd);
+            return RedirectPermanent(url);
         }
     }
 }

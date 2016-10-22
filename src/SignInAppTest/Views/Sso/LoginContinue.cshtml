@@ -23,6 +23,12 @@
                     <input type="hidden" name="token" value="@Model.Application.Token" />
                     <input type="submit" class="btn btn-default" value="Dit ben ik niet" />
                 </form>
+                <div style="margin: 20px;"></div>
+                <form asp-controller="Sso" asp-action="Cancel" method="post" class="form-horizontal">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="token" value="@Model.Application.Token" />
+                    <input type="submit" class="btn btn-danger" value="Annuleren" />
+                </form>
             </section>
         </div>
     }
