@@ -53,7 +53,9 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                     Name = model.Name,
                     LoginCallbackUrl = model.LoginCallbackUrl,
                     Token = Guid.NewGuid(),
-                    Secret = model.Secret
+                    Secret = model.Secret,
+                    ValidFor = model.ValidFor,
+                    ExtendExpiryOnRequest = model.ExtendExpiryOnRequest
                 };
                 _context.Applications.Add(application);
                 var contextUser = _context.ApplicationUser.First(u => u.Id == user.Id);
@@ -101,7 +103,9 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                         Name = app.Name,
                         Secret = app.Secret,
                         LoginCallbackUrl = app.LoginCallbackUrl,
-                        Token = app.Token.ToString()
+                        Token = app.Token.ToString(),
+                        ValidFor = app.ValidFor,
+                        ExtendExpiryOnRequest = app.ExtendExpiryOnRequest
                     });
 
             return RedirectToAction(nameof(Index));
@@ -123,6 +127,8 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             app.Name = model.Name;
             app.LoginCallbackUrl = model.LoginCallbackUrl;
             app.Secret = model.Secret;
+            app.ValidFor = model.ValidFor;
+            app.ExtendExpiryOnRequest = model.ExtendExpiryOnRequest;
 
             _context.Applications.Update(app);
             await _context.SaveChangesAsync();

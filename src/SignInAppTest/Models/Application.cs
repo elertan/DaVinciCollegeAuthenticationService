@@ -14,7 +14,7 @@ namespace DaVinciCollegeAuthenticationService.Models
         [MaxLength(100)]
         public string Name { get; set; }
 
-        [Display(Name = "Secret Code")]
+        //[Display(Name = "Secret Code")]
         [MinLength(5)]
         [MaxLength(100)]
         public string Secret { get; set; }
@@ -24,5 +24,10 @@ namespace DaVinciCollegeAuthenticationService.Models
 
         [DataType(DataType.Url)]
         public string LoginCallbackUrl { get; set; }
+
+        [DataType(DataType.Duration)]
+        public int ValidFor { get; set; }
+
+        public bool ExtendExpiryOnRequest { get; set; }
     }
 }

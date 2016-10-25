@@ -66,11 +66,15 @@ namespace DaVinciCollegeAuthenticationService.Controllers
 
             var payload = new Dictionary<string, object>
             {
-                {"userNumber", userNumber}
+                {"userNumber", userNumber},
+                {"expiry", DateTime.Now.AddSeconds(app.ValidFor).Ticks.ToString()}
             };
 
             var secretKey = Encoding.UTF8.GetBytes(app.Secret);
             var jwt = JWT.Encode(payload, secretKey, JwsAlgorithm.HS256);
+
+            _context.Accesstokens.Add(new Accesstoken {App = app, Token = jwt});
+            await _context.SaveChangesAsync();
 
             var parametersToAdd = new Dictionary<string, string>
             {
@@ -95,11 +99,15 @@ namespace DaVinciCollegeAuthenticationService.Controllers
 
             var payload = new Dictionary<string, object>
             {
-                {"userNumber", User.Identity.Name}
+                {"userNumber", User.Identity.Name},
+                {"expiry", DateTime.Now.AddSeconds(app.ValidFor).Ticks.ToString()}
             };
 
             var secretKey = Encoding.UTF8.GetBytes(app.Secret);
             var jwt = JWT.Encode(payload, secretKey, JwsAlgorithm.HS256);
+
+            _context.Accesstokens.Add(new Accesstoken {App = app, Token = jwt});
+            await _context.SaveChangesAsync();
 
             var parametersToAdd = new Dictionary<string, string>
             {
@@ -135,6 +143,46 @@ namespace DaVinciCollegeAuthenticationService.Controllers
 
             var url = QueryHelpers.AddQueryString(app.LoginCallbackUrl, parametersToAdd);
             return RedirectPermanent(url);
+        }
+
+        [Route("Sso/ValidateAuth/{appId}/{token}")]
+        public async Task<IActionResult> ValidateAuth(string appId, string token)
+        {
+            Guid guid;
+            if (!Guid.TryParse(appId, out guid))
+                return Json(new {err = "Invalid AppId"});
+
+            var app = await _context.Applications.FirstOrDefaultAsync(a => a.Token.Equals(guid));
+            if (app == null) Json(new {err = "Invalid AppId"});
+
+            var accessToken = await _context.Accesstokens.FirstOrDefaultAsync(at => at.Token == token);
+            if (accessToken == null) return Json(new {err = "Invalid Accesstoken"});
+
+            if (!accessToken.App.Token.Equals(guid)) Json(new {err = "AppId doesn't match with Accesstoken"});
+
+            var secretKey = Encoding.UTF8.GetBytes(app.Secret);
+
+            var data = JWT.Decode<Dictionary<string, dynamic>>(token, secretKey, JwsAlgorithm.HS256);
+            var signedDateTime = new DateTime(Convert.ToInt64(data["expiry"]));
+
+            var parametersToAdd = new Dictionary<string, string>();
+
+            // Expiry is still not reached?
+            if ((signedDateTime - DateTime.Now).Ticks > 0)
+            {
+                if (app.ExtendExpiryOnRequest)
+                {
+                    data["expiry"] = DateTime.Now.AddSeconds(app.ValidFor).Ticks.ToString();
+                    token = JWT.Encode(data, secretKey, JwsAlgorithm.HS256);
+                    accessToken.Token = token;
+                    await _context.SaveChangesAsync();
+                }
+                return Json(new {token});
+            }
+            _context.Accesstokens.Remove(accessToken);
+            await _context.SaveChangesAsync();
+
+            return Json(new {err = "expired"});
         }
     }
 }

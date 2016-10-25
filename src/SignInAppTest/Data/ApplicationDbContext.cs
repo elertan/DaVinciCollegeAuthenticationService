@@ -13,6 +13,7 @@ namespace DaVinciCollegeAuthenticationService.Data
 
         public DbSet<ApplicationUser> ApplicationUser { get; set; }
         public DbSet<Application> Applications { get; set; }
+        public DbSet<Accesstoken> Accesstokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -8,31 +8,14 @@ using DaVinciCollegeAuthenticationService.Data;
 namespace DaVinciCollegeAuthenticationService.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20161025074240_UpdatedValidForAndAddedExpiryExtendingModel")]
+    partial class UpdatedValidForAndAddedExpiryExtendingModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("DaVinciCollegeAuthenticationService.Models.Accesstoken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("AppId")
-                        .IsRequired();
-
-                    b.Property<string>("Token")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppId");
-
-                    b.ToTable("Accesstokens");
-                });
 
             modelBuilder.Entity("DaVinciCollegeAuthenticationService.Models.Application", b =>
                 {
@@ -221,14 +204,6 @@ namespace DaVinciCollegeAuthenticationService.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("DaVinciCollegeAuthenticationService.Models.Accesstoken", b =>
-                {
-                    b.HasOne("DaVinciCollegeAuthenticationService.Models.Application", "App")
-                        .WithMany()
-                        .HasForeignKey("AppId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("DaVinciCollegeAuthenticationService.Models.Application", b =>
