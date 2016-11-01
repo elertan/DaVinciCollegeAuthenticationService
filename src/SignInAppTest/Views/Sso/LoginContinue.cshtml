@@ -6,34 +6,49 @@
     Layout = "_Layout";
 }
 
-<div class="row">
-    @if (Model != null)
-    {
-        <div class="col-md-8">
-            <section>
-                <form asp-controller="Sso" asp-action="LoginContinue" method="post" class="form-horizontal">
-                    @Html.AntiForgeryToken()
-                    <h4>Toegang verlenen tot @Model.Application.Name</h4>
-                    <input type="hidden" name="token" value="@Model.Application.Token"/>
-                    <input type="submit" class="btn btn-primary" value="Doorgaan als @User.Identity.Name">
-                </form>
-                <div style="margin: 20px;"></div>
-                <form asp-controller="Sso" asp-action="Logout" method="post" class="form-horizontal">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="token" value="@Model.Application.Token" />
-                    <input type="submit" class="btn btn-default" value="Dit ben ik niet" />
-                </form>
-                <div style="margin: 20px;"></div>
-                <form asp-controller="Sso" asp-action="Cancel" method="post" class="form-horizontal">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="token" value="@Model.Application.Token" />
-                    <input type="submit" class="btn btn-danger" value="Annuleren" />
-                </form>
-            </section>
-        </div>
+@if (Model != null)
+{
+    <div class="modal fade" id="modalLogin">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Inloggen</h4>
+                </div>
+                <div class="modal-body">
+                    <h5>Toegang verlenen tot @Model.Application.Name</h5>
+                </div>
+                <div class="modal-footer">
+                    <form asp-controller="Sso" asp-action="Cancel" method="post" class="form-horizontal" style="display: inline-block;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="token" value="@Model.Application.Token" />
+                        <input type="submit" class="btn btn-danger" value="Annuleren" />
+                    </form>
+                    <form asp-controller="Sso" asp-action="Logout" method="post" class="form-horizontal" style="display: inline-block;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="token" value="@Model.Application.Token"/>
+                        <input type="submit" class="btn btn-default" value="Dit ben ik niet"/>
+                    </form>
+                    <form asp-controller="Sso" asp-action="LoginContinue" method="post" class="form-horizontal" style="display: inline-block;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="token" value="@Model.Application.Token"/>
+                        <input type="submit" class="btn btn-primary" value="Doorgaan als @User.Identity.Name">
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    @section Scripts {
+        <script>
+            $(document).ready(function() {
+                $("#modalLogin").modal();
+            });
+        </script>
     }
-    else
-    {
-        <h2>Dit is geen geldige login pagina.</h2>
-    }
-</div>
+}
+else
+{
+    <h2>Dit is geen geldige login pagina.</h2>
+}

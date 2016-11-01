@@ -153,7 +153,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                 return Json(new {err = "Invalid AppId"});
 
             var app = await _context.Applications.FirstOrDefaultAsync(a => a.Token.Equals(guid));
-            if (app == null) Json(new {err = "Invalid AppId"});
+            if (app == null) return Json(new {err = "Invalid AppId"});
 
             var accessToken = await _context.Accesstokens.FirstOrDefaultAsync(at => at.Token == token);
             if (accessToken == null) return Json(new {err = "Invalid Accesstoken"});
@@ -165,18 +165,15 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             var data = JWT.Decode<Dictionary<string, dynamic>>(token, secretKey, JwsAlgorithm.HS256);
             var signedDateTime = new DateTime(Convert.ToInt64(data["expiry"]));
 
-            var parametersToAdd = new Dictionary<string, string>();
-
             // Expiry is still not reached?
             if ((signedDateTime - DateTime.Now).Ticks > 0)
             {
-                if (app.ExtendExpiryOnRequest)
-                {
-                    data["expiry"] = DateTime.Now.AddSeconds(app.ValidFor).Ticks.ToString();
-                    token = JWT.Encode(data, secretKey, JwsAlgorithm.HS256);
-                    accessToken.Token = token;
-                    await _context.SaveChangesAsync();
-                }
+                if (!app.ExtendExpiryOnRequest) return Json(new {token});
+
+                data["expiry"] = DateTime.Now.AddSeconds(app.ValidFor).Ticks.ToString();
+                token = JWT.Encode(data, secretKey, JwsAlgorithm.HS256);
+                accessToken.Token = token;
+                await _context.SaveChangesAsync();
                 return Json(new {token});
             }
             _context.Accesstokens.Remove(accessToken);
