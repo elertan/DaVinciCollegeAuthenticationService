@@ -35,13 +35,18 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [Route("Sso/Login/{token}")]
-        public async Task<IActionResult> Login(string token)
+        public async Task<IActionResult> Login(string token, string returnUrl)//1
         {
             Guid guid;
             if (!Guid.TryParse(token, out guid)) return View(null);
 
             var app = await _context.Applications.FirstOrDefaultAsync(a => a.Token.Equals(guid));
-            var model = new LoginViewModel {Application = app};
+            if (app == null)
+            {
+                return View("InvalidLoginToken");
+            }
+
+            var model = new LoginViewModel {Application = app, ReturnUrl = returnUrl};
             return _signInManager.IsSignedIn(User) ? View("LoginContinue", model) : View(model);
         }
 
@@ -49,7 +54,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Sso/Login/{token}")]
-        public async Task<IActionResult> LoginPost(string userNumber, string password, string token)
+        public async Task<IActionResult> LoginPost(string userNumber, string password, string token, string returnUrl)
         {
             Guid guid;
             if (!Guid.TryParse(token, out guid))
@@ -78,8 +83,13 @@ namespace DaVinciCollegeAuthenticationService.Controllers
 
             var parametersToAdd = new Dictionary<string, string>
             {
-                {"token", jwt}
+                {"token", jwt},
             };
+
+            if (returnUrl != null)
+            {
+                parametersToAdd.Add("returnUrl", returnUrl);
+            }
 
             var url = QueryHelpers.AddQueryString(app.LoginCallbackUrl, parametersToAdd);
             return RedirectPermanent(url);
@@ -88,7 +98,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Sso/LoginContinue")]
-        public async Task<IActionResult> LoginContinue(string token)
+        public async Task<IActionResult> LoginContinue(string token, string returnUrl)
         {
             Guid guid;
             if (!Guid.TryParse(token, out guid))
@@ -113,6 +123,11 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             {
                 {"token", jwt}
             };
+
+            if (returnUrl != null)
+            {
+                parametersToAdd.Add("returnUrl", returnUrl);
+            }
 
             var url = QueryHelpers.AddQueryString(app.LoginCallbackUrl, parametersToAdd);
             return RedirectPermanent(url);
