@@ -44,7 +44,8 @@
       "version": "1.0.0-preview2-final",
       "type": "build"
     },
-    "jose-jwt": "2.0.2"
+    "jose-jwt": "2.0.2",
+    "MailKit": "1.10.0"
   },
 
   "tools": {

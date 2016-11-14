@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DaVinciCollegeAuthenticationService.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DaVinciCollegeAuthenticationService.Controllers
 {

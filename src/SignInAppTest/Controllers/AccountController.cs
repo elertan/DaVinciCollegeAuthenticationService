@@ -8,20 +8,24 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using System;
+using DaVinciCollegeAuthenticationService.Data;
 
 namespace DaVinciCollegeAuthenticationService.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
+        private readonly ApplicationDbContext _context;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailProvider _emailProvider;
         private readonly IEmailSender _emailSender;
-        private readonly ILogger _logger;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ISmsSender _smsSender;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger _logger;
 
         public AccountController(
+            ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
@@ -29,6 +33,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             ILoggerFactory loggerFactory,
             IEmailProvider emailProvider)
         {
+            _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
@@ -37,7 +42,6 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             _logger = loggerFactory.CreateLogger<AccountController>();
         }
 
-        //
         // GET: /Account/Login
         [HttpGet]
         [AllowAnonymous]
@@ -47,7 +51,6 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             return View();
         }
 
-        //
         // POST: /Account/Login
         [HttpPost]
         [AllowAnonymous]
@@ -81,7 +84,6 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             return View(model);
         }
 
-        ////
         //// GET: /Account/Register
         //[HttpGet]
         //[AllowAnonymous]
@@ -91,7 +93,6 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         //    return View();
         //}
 
-        ////
         //// POST: /Account/Register
         //[HttpPost]
         //[AllowAnonymous]
@@ -229,7 +230,6 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
-        //
         // GET: /Account/ForgotPassword
         [HttpGet]
         [AllowAnonymous]
@@ -238,21 +238,68 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             return View();
         }
 
-        //
         // POST: /Account/ForgotPassword
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
-            var email = _emailProvider.GetEmailByUserNumber(model.UserNumber);
-            var message =
-                $"Beste {model.UserNumber},\n\nDruk op deze link om jouw account's wachtwoord te veranderen.\n\nAls jij deze aanvraag niet hebt gedaan, kan je deze mail negeren.\n\nMet vriendelijke groet,\n\nHet DaVinci Authservice Team";
-            await _emailSender.SendEmailAsync(email, "Account Password Reset", message);
+            var emailAddress = _emailProvider.GetEmailByUserNumber(model.UserNumber);
+            var vertificationCode = Guid.NewGuid();
+            var message = $"Beste {model.UserNumber},\n\nDruk op deze link om jouw account's wachtwoord te veranderen. http://localhost:2922/Account/ForgetPasswordVertification/{vertificationCode}\n\nAls jij deze aanvraag niet hebt gedaan, kan je deze mail negeren.\n\nMet vriendelijke groet,\n\nHet DaVinci Authservice Team";
+            await _emailSender.SendEmailAsync(emailAddress, "Account Password Reset", message);
+            _context.PasswordResets.Add(new PasswordReset() { UserNumber = int.Parse(model.UserNumber), VertificationCode = vertificationCode });
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(ForgotPasswordConfirmation));
         }
 
-        //
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("Account/ForgetPasswordVertification/{vertificationCode}")]
+        public IActionResult ForgetPasswordVertification(string vertificationCode)
+        {
+            Guid vertCode;
+            if (Guid.TryParse(vertificationCode, out vertCode))
+            {
+                var passwordReset = _context.PasswordResets.FirstOrDefault(p => p.VertificationCode == vertCode);
+                if (passwordReset != null)
+                {
+                    return View(new ForgetPasswordVerificationModel() { PasswordReset = passwordReset });
+                }
+            }
+
+            return RedirectToAction("Index", "Home");
+            //The vertificationCode doesnt exist
+
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgetPasswordVertification(ForgetPasswordVerificationModel forgetPasswordModel, string vertificationCode, string userNumber)
+        {
+            if (forgetPasswordModel.NewPassword != forgetPasswordModel.CheckPassword)
+            {
+                ForgetPasswordVertification(vertificationCode);
+            }
+
+            Guid vertCode;
+            if (Guid.TryParse(vertificationCode, out vertCode))
+            {
+                var passwordReset = _context.PasswordResets.FirstOrDefault(p => p.VertificationCode == vertCode);
+                if (passwordReset != null)
+                {
+                    var userToChange = _context.Users.FirstOrDefault(u => u.UserName == userNumber.ToString());
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(userToChange);
+                    await _userManager.ResetPasswordAsync(userToChange, code, forgetPasswordModel.NewPassword);
+                }
+            }
+
+            return RedirectToAction("Index", "Home");
+            //The vertificationCode doesnt exist
+
+        }
+
         // GET: /Account/ForgotPasswordConfirmation
         [HttpGet]
         [AllowAnonymous]
@@ -261,7 +308,6 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             return View();
         }
 
-        //
         // GET: /Account/ResetPassword
         [HttpGet]
         [AllowAnonymous]
@@ -270,7 +316,6 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             return code == null ? View("Error") : View();
         }
 
-        //
         // POST: /Account/ResetPassword
         [HttpPost]
         [AllowAnonymous]
@@ -289,7 +334,6 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             return View();
         }
 
-        //
         // GET: /Account/ResetPasswordConfirmation
         [HttpGet]
         [AllowAnonymous]
@@ -298,7 +342,6 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             return View();
         }
 
-        //
         // GET: /Account/SendCode
         [HttpGet]
         [AllowAnonymous]
@@ -314,7 +357,6 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                 View(new SendCodeViewModel {Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe});
         }
 
-        //
         // POST: /Account/SendCode
         [HttpPost]
         [AllowAnonymous]
@@ -343,7 +385,6 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                 new {Provider = model.SelectedProvider, model.ReturnUrl, model.RememberMe});
         }
 
-        //
         // GET: /Account/VerifyCode
         [HttpGet]
         [AllowAnonymous]
@@ -356,7 +397,6 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             return View(new VerifyCodeViewModel {Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe});
         }
 
-        //
         // POST: /Account/VerifyCode
         [HttpPost]
         [AllowAnonymous]
