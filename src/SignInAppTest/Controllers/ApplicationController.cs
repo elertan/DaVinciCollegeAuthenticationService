@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DaVinciCollegeAuthenticationService.Data;
@@ -55,7 +56,8 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                     Token = Guid.NewGuid(),
                     Secret = model.Secret,
                     ValidFor = model.ValidFor,
-                    ExtendExpiryOnRequest = model.ExtendExpiryOnRequest
+                    ExtendExpiryOnRequest = model.ExtendExpiryOnRequest,
+                    ApplicationUsersHasAuthLevels = new List<ApplicationUserHasAuthLevel>()
                 };
                 _context.Applications.Add(application);
                 var contextUser = _context.ApplicationUser.First(u => u.Id == user.Id);
@@ -134,6 +136,15 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [Route("Application/EditUserAuthLevels/{applicationId}")]
+        public async Task<IActionResult> EditUserAuthLevels(string applicationId)
+        {
+            var app = await _context.Applications.FirstOrDefaultAsync(a => a.Id.ToString() == applicationId);
+            if (app == null) return RedirectToAction(nameof(Index));
+
+            return View();
         }
     }
 }
