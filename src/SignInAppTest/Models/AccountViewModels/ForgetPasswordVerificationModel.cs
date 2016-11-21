@@ -12,10 +12,12 @@ namespace DaVinciCollegeAuthenticationService.Models.AccountViewModels
 
         [Required]
         [Display(Name = "New Password")]
+        [DataType(DataType.Password)]
         public string NewPassword { get; set; }
 
-        [Required]
+        [Compare("NewPassword", ErrorMessage = "The password and confirmation password do not match.")]
         [Display(Name = "Check Password")]
+        [DataType(DataType.Password)]
         public string CheckPassword { get; set; }
     }
 }

@@ -278,20 +278,24 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgetPasswordVertification(ForgetPasswordVerificationModel forgetPasswordModel, string vertificationCode, string userNumber)
         {
-            if (forgetPasswordModel.NewPassword != forgetPasswordModel.CheckPassword)
+            if (!ModelState.IsValid)
             {
-                ForgetPasswordVertification(vertificationCode);
+                forgetPasswordModel.PasswordReset = _context.PasswordResets.FirstOrDefault(p => p.VertificationCode == Guid.Parse(vertificationCode));
+                return View(forgetPasswordModel);
             }
 
-            Guid vertCode;
-            if (Guid.TryParse(vertificationCode, out vertCode))
+            if (ModelState.IsValid)
             {
-                var passwordReset = _context.PasswordResets.FirstOrDefault(p => p.VertificationCode == vertCode);
-                if (passwordReset != null)
+                Guid vertCode;
+                if (Guid.TryParse(vertificationCode, out vertCode))
                 {
-                    var userToChange = _context.Users.FirstOrDefault(u => u.UserName == userNumber.ToString());
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(userToChange);
-                    await _userManager.ResetPasswordAsync(userToChange, code, forgetPasswordModel.NewPassword);
+                    var passwordReset = _context.PasswordResets.FirstOrDefault(p => p.VertificationCode == vertCode);
+                    if (passwordReset != null)
+                    {
+                        var userToChange = _context.Users.FirstOrDefault(u => u.UserName == userNumber.ToString());
+                        var code = await _userManager.GeneratePasswordResetTokenAsync(userToChange);
+                        var resetResult = await _userManager.ResetPasswordAsync(userToChange, code, forgetPasswordModel.NewPassword);
+                    }
                 }
             }
 
