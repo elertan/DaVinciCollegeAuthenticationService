@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DaVinciCollegeAuthenticationService.Data;
@@ -10,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Packaging;
 
 namespace DaVinciCollegeAuthenticationService.Controllers
 {
@@ -56,8 +56,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                     Token = Guid.NewGuid(),
                     Secret = model.Secret,
                     ValidFor = model.ValidFor,
-                    ExtendExpiryOnRequest = model.ExtendExpiryOnRequest,
-                    ApplicationUsersHasAuthLevels = new List<ApplicationUserHasAuthLevel>()
+                    ExtendExpiryOnRequest = model.ExtendExpiryOnRequest
                 };
                 _context.Applications.Add(application);
                 var contextUser = _context.ApplicationUser.First(u => u.Id == user.Id);
@@ -144,7 +143,37 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             var app = await _context.Applications.FirstOrDefaultAsync(a => a.Id.ToString() == applicationId);
             if (app == null) return RedirectToAction(nameof(Index));
 
-            return View();
+            app.ApplicationUsersHasAuthLevels =
+                _context.ApplicationUserHasAuthLevels.Where(auhal => auhal.App.Id == app.Id).ToList();
+
+            return
+                View(new EditUserAuthLevelsViewModel
+                {
+                    Application = app
+                });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Application/EditUserAuthLevels/{applicationId}")]
+        public async Task<IActionResult> EditUserAuthLevels(string applicationId,
+            ApplicationUserHasAuthLevel[] authLevels)
+        {
+            var app = await _context.Applications.FirstOrDefaultAsync(a => a.Id.ToString() == applicationId);
+            if (app == null) return RedirectToAction(nameof(Index));
+
+            app.ApplicationUsersHasAuthLevels =
+                _context.ApplicationUserHasAuthLevels.Where(auhal => auhal.App.Id == app.Id).ToList();
+
+            _context.ApplicationUserHasAuthLevels.RemoveRange(app.ApplicationUsersHasAuthLevels);
+            app.ApplicationUsersHasAuthLevels.Clear();
+
+            _context.ApplicationUserHasAuthLevels.AddRange(authLevels);
+            app.ApplicationUsersHasAuthLevels.AddRange(authLevels);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
         }
     }
 }

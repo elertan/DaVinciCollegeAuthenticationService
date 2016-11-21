@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DaVinciCollegeAuthenticationService.Models.AccountViewModels
 {
@@ -11,11 +7,11 @@ namespace DaVinciCollegeAuthenticationService.Models.AccountViewModels
         public PasswordReset PasswordReset { get; set; }
 
         [Required]
-        [Display(Name = "New Password")]
+        [Display(Name = "Nieuw Wachtwoord")]
         public string NewPassword { get; set; }
 
         [Required]
-        [Display(Name = "Check Password")]
+        [Display(Name = "Herhaal Nieuw Wachtwoord")]
         public string CheckPassword { get; set; }
     }
 }

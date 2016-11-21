@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using DaVinciCollegeAuthenticationService.Data;
 using DaVinciCollegeAuthenticationService.Models;
 using DaVinciCollegeAuthenticationService.Models.AccountViewModels;
 using DaVinciCollegeAuthenticationService.Services;
@@ -8,8 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
-using System;
-using DaVinciCollegeAuthenticationService.Data;
 
 namespace DaVinciCollegeAuthenticationService.Controllers
 {
@@ -17,12 +17,12 @@ namespace DaVinciCollegeAuthenticationService.Controllers
     public class AccountController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailProvider _emailProvider;
         private readonly IEmailSender _emailSender;
-        private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ISmsSender _smsSender;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public AccountController(
             ApplicationDbContext context,
@@ -246,9 +246,14 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         {
             var emailAddress = _emailProvider.GetEmailByUserNumber(model.UserNumber);
             var vertificationCode = Guid.NewGuid();
-            var message = $"Beste {model.UserNumber},\n\nDruk op deze link om jouw account's wachtwoord te veranderen. http://localhost:2922/Account/ForgetPasswordVertification/{vertificationCode}\n\nAls jij deze aanvraag niet hebt gedaan, kan je deze mail negeren.\n\nMet vriendelijke groet,\n\nHet DaVinci Authservice Team";
+            var message =
+                $"Beste {model.UserNumber},\n\nDruk op deze link om jouw account's wachtwoord te veranderen. http://localhost:2922/Account/ForgetPasswordVertification/{vertificationCode}\n\nAls jij deze aanvraag niet hebt gedaan, kan je deze mail negeren.\n\nMet vriendelijke groet,\n\nHet DaVinci Authservice Team";
             await _emailSender.SendEmailAsync(emailAddress, "Account Password Reset", message);
-            _context.PasswordResets.Add(new PasswordReset() { UserNumber = int.Parse(model.UserNumber), VertificationCode = vertificationCode });
+            _context.PasswordResets.Add(new PasswordReset
+            {
+                UserNumber = int.Parse(model.UserNumber),
+                VertificationCode = vertificationCode
+            });
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(ForgotPasswordConfirmation));
         }
@@ -263,41 +268,33 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             {
                 var passwordReset = _context.PasswordResets.FirstOrDefault(p => p.VertificationCode == vertCode);
                 if (passwordReset != null)
-                {
-                    return View(new ForgetPasswordVerificationModel() { PasswordReset = passwordReset });
-                }
+                    return View(new ForgetPasswordVerificationModel {PasswordReset = passwordReset});
             }
 
             return RedirectToAction("Index", "Home");
             //The vertificationCode doesnt exist
-
         }
 
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgetPasswordVertification(ForgetPasswordVerificationModel forgetPasswordModel, string vertificationCode, string userNumber)
+        public async Task<IActionResult> ForgetPasswordVertification(
+            ForgetPasswordVerificationModel forgetPasswordModel, string vertificationCode, string userNumber)
         {
             if (forgetPasswordModel.NewPassword != forgetPasswordModel.CheckPassword)
-            {
                 ForgetPasswordVertification(vertificationCode);
-            }
 
             Guid vertCode;
-            if (Guid.TryParse(vertificationCode, out vertCode))
-            {
-                var passwordReset = _context.PasswordResets.FirstOrDefault(p => p.VertificationCode == vertCode);
-                if (passwordReset != null)
-                {
-                    var userToChange = _context.Users.FirstOrDefault(u => u.UserName == userNumber.ToString());
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(userToChange);
-                    await _userManager.ResetPasswordAsync(userToChange, code, forgetPasswordModel.NewPassword);
-                }
-            }
+            if (!Guid.TryParse(vertificationCode, out vertCode)) return RedirectToAction("Index", "Home");
 
-            return RedirectToAction("Index", "Home");
-            //The vertificationCode doesnt exist
+            var passwordReset = _context.PasswordResets.FirstOrDefault(p => p.VertificationCode == vertCode);
+            if (passwordReset == null) return RedirectToAction("Index", "Home");
 
+            var userToChange = _context.Users.FirstOrDefault(u => u.UserName == userNumber.ToString());
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(userToChange);
+            await _userManager.ResetPasswordAsync(userToChange, code, forgetPasswordModel.NewPassword);
+
+            return RedirectToAction("Login", "Account");
         }
 
         // GET: /Account/ForgotPasswordConfirmation

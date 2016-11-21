@@ -7,9 +7,13 @@ namespace DaVinciCollegeAuthenticationService.Models
 {
     public class Application
     {
+        public Application()
+        {
+            ApplicationUsersHasAuthLevels = new List<ApplicationUserHasAuthLevel>();
+        }
         public virtual ApplicationUser User { get; set; }
 
-        public virtual List<ApplicationUserHasAuthLevel> ApplicationUsersHasAuthLevels { get; set; }
+        public virtual ICollection<ApplicationUserHasAuthLevel> ApplicationUsersHasAuthLevels { get; set; }
 
         public int Id { get; set; }
 

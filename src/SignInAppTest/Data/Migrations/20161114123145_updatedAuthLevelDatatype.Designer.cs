@@ -8,9 +8,10 @@ using DaVinciCollegeAuthenticationService.Data;
 namespace DaVinciCollegeAuthenticationService.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20161114123145_updatedAuthLevelDatatype")]
+    partial class updatedAuthLevelDatatype
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
@@ -121,7 +122,7 @@ namespace DaVinciCollegeAuthenticationService.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("AppId");
+                    b.Property<int?>("ApplicationId");
 
                     b.Property<int>("AuthLevel");
 
@@ -129,9 +130,9 @@ namespace DaVinciCollegeAuthenticationService.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppId");
+                    b.HasIndex("ApplicationId");
 
-                    b.ToTable("ApplicationUserHasAuthLevels");
+                    b.ToTable("ApplicationUserHasAuthLevel");
                 });
 
             modelBuilder.Entity("DaVinciCollegeAuthenticationService.Models.PasswordReset", b =>
@@ -272,9 +273,9 @@ namespace DaVinciCollegeAuthenticationService.Data.Migrations
 
             modelBuilder.Entity("DaVinciCollegeAuthenticationService.Models.ApplicationUserHasAuthLevel", b =>
                 {
-                    b.HasOne("DaVinciCollegeAuthenticationService.Models.Application", "App")
+                    b.HasOne("DaVinciCollegeAuthenticationService.Models.Application")
                         .WithMany("ApplicationUsersHasAuthLevels")
-                        .HasForeignKey("AppId");
+                        .HasForeignKey("ApplicationId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>

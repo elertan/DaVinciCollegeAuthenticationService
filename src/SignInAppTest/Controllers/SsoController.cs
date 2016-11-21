@@ -67,12 +67,16 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                 return RedirectToAction("Login", new {token});
             }
 
+            var authLevel =
+                await _context.ApplicationUserHasAuthLevels.FirstOrDefaultAsync(
+                    auhal => (auhal.App.Id == app.Id) && (auhal.UserNumber == User.Identity.Name));
+
             var payload = new Dictionary<string, object>
             {
                 {"userNumber", userNumber},
                 {"expiry", DateTime.Now.AddSeconds(app.ValidFor).Ticks.ToString()},
                 {
-                    "authLevel", 0
+                    "authLevel", authLevel.AuthLevel
                 }
             };
 
@@ -106,12 +110,17 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             var app = await _context.Applications.FirstOrDefaultAsync(a => a.Token.Equals(guid));
             if (app == null) return BadRequest();
 
+            var authLevel =
+                await _context.ApplicationUserHasAuthLevels.FirstOrDefaultAsync(
+                    auhal => (auhal.App.Id == app.Id) && (auhal.UserNumber == User.Identity.Name));
+
+
             var payload = new Dictionary<string, object>
             {
                 {"userNumber", User.Identity.Name},
                 {"expiry", DateTime.Now.AddSeconds(app.ValidFor).Ticks.ToString()},
                 {
-                    "authLevel", 0
+                    "authLevel", authLevel.AuthLevel
                 }
             };
 

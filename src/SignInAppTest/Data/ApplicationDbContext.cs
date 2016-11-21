@@ -16,6 +16,8 @@ namespace DaVinciCollegeAuthenticationService.Data
         public DbSet<Accesstoken> Accesstokens { get; set; }
         public DbSet<PasswordReset> PasswordResets { get; set; }
 
+        public DbSet<ApplicationUserHasAuthLevel> ApplicationUserHasAuthLevels { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -28,6 +30,11 @@ namespace DaVinciCollegeAuthenticationService.Data
 
             builder.Entity<Application>()
                 .HasOne(app => app.User);
+
+            builder.Entity<Application>()
+                .HasMany(app => app.ApplicationUsersHasAuthLevels);
+
+            builder.Entity<ApplicationUserHasAuthLevel>().HasOne(auhal => auhal.App);
         }
     }
 }
