@@ -1,0 +1,40 @@
+﻿@model DaVinciCollegeAuthenticationService.Models.ApplicationViewModels.EditUserAuthLevelsViewModel
+
+<div class="row col-md-offset-2">
+    <div class="col-md-10">
+        <h2>Verander het authorisatie niveau van specifieke gebruikers</h2>
+        <hr/>
+        <button id="addNewAuthLevelButton" class="btn btn-default">Voeg nieuwe authorisatie regel toe</button>
+        <button id="sendFormButton" class="btn btn-primary">Opslaan</button>
+        <form id="editUserAuthLevelsForm" asp-controller="Application" asp-action="EditUserAuthLevels" method="post" class="form-horizontal">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <input type="submit" class="hidden"/>
+            @for (var i = 0; i < Model.Application.ApplicationUsersHasAuthLevels.Count; i++)
+            {
+                <div class="form-group" style="border: 1px solid #000; padding: 5px;">
+                    <input type="text" class="form-control col-sm-4" name="authLevels[@i].UserNumber" placeholder="99020000" value="@Model.Application.ApplicationUsersHasAuthLevels.ToArray()[i].UserNumber" required />
+                    <input type="number" class="form-control col-sm-8" name="authLevels[@i].AuthLevel" placeholder="Een getal dat aangeeft welk auth niveau de gebruiker heeft" min="0" value="@Model.Application.ApplicationUsersHasAuthLevels.ToArray()[i].AuthLevel" required/>
+                    <button class="btn btn-danger" onclick="$(this).parent().remove()">Regel Verwijderen</button>
+                </div>
+            }
+        </form>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        $(function() {
+            $("#sendFormButton").click(function() {
+                $("#editUserAuthLevelsForm").find('[type="submit"]').trigger('click');
+            });
+
+            $("#addNewAuthLevelButton")
+                .click(function() {
+                    var index = $("#editUserAuthLevelsForm div.form-group").size();
+                    $("#editUserAuthLevelsForm")
+                        .append("<div class=\"form-group\" style=\"border: 1px solid #000; padding: 5px;\"> <input type=\"text\" class=\"form-control col-sm-4\" name=\"authLevels[" + index + "].UserNumber\" placeholder=\"99020000\" required /> <input type=\"number\" class=\"form-control col-sm-8\" name=\"authLevels[" + index + "].AuthLevel\" placeholder=\"1\" min=\"0\" max=\"5\" required/> <button class=\"btn btn-danger\" onclick=\"$(this).parent().remove()\">Regel Verwijderen</button> </div>");
+                });
+        });
+    </script>
+}

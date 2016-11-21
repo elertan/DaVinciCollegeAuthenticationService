@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Packaging;
 
 namespace DaVinciCollegeAuthenticationService.Controllers
 {
@@ -134,6 +135,45 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [Route("Application/EditUserAuthLevels/{applicationId}")]
+        public async Task<IActionResult> EditUserAuthLevels(string applicationId)
+        {
+            var app = await _context.Applications.FirstOrDefaultAsync(a => a.Id.ToString() == applicationId);
+            if (app == null) return RedirectToAction(nameof(Index));
+
+            app.ApplicationUsersHasAuthLevels =
+                _context.ApplicationUserHasAuthLevels.Where(auhal => auhal.App.Id == app.Id).ToList();
+
+            return
+                View(new EditUserAuthLevelsViewModel
+                {
+                    Application = app
+                });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Application/EditUserAuthLevels/{applicationId}")]
+        public async Task<IActionResult> EditUserAuthLevels(string applicationId,
+            ApplicationUserHasAuthLevel[] authLevels)
+        {
+            var app = await _context.Applications.FirstOrDefaultAsync(a => a.Id.ToString() == applicationId);
+            if (app == null) return RedirectToAction(nameof(Index));
+
+            app.ApplicationUsersHasAuthLevels =
+                _context.ApplicationUserHasAuthLevels.Where(auhal => auhal.App.Id == app.Id).ToList();
+
+            _context.ApplicationUserHasAuthLevels.RemoveRange(app.ApplicationUsersHasAuthLevels);
+            app.ApplicationUsersHasAuthLevels.Clear();
+
+            _context.ApplicationUserHasAuthLevels.AddRange(authLevels);
+            app.ApplicationUsersHasAuthLevels.AddRange(authLevels);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
         }
     }
 }

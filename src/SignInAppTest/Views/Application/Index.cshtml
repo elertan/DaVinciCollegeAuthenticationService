@@ -12,7 +12,8 @@
                      <p style="display:inline-block;">@application.Name</p>
                      @*<hr />*@
                      <button class="btn btn-danger" style="float:right;" onclick="removePrompt(function (confirmed) { if (confirmed) { window.location.replace('@Url.Action("Delete", new { Id = application.Id })'); } })"><i class="fa fa-remove fa-fw" aria-hidden="true"></i>Verwijder</button>
-                     <a asp-controller="Application" asp-action="Update" asp-route-applicationId="@application.Id" class="btn btn-warning" style="display:inline-block; float:right;"><i class="fa fa-edit fa-fw" aria-hidden="true"></i>Bewerken</a> 
+                     <a asp-controller="Application" asp-action="Update" asp-route-applicationId="@application.Id" class="btn btn-warning" style="display:inline-block; float:right;"><i class="fa fa-edit fa-fw" aria-hidden="true"></i>Bewerken</a>
+                     <a asp-controller="Application" asp-action="EditUserAuthLevels" asp-route-applicationId="@application.Id" class="btn btn-default" style="display:inline-block; float:right;"><i class="fa fa-key fa-fw" aria-hidden="true"></i>Auth Niveau's</a>
                      <div class="input-group">
                          <input class="form-control ssoLoginLink" style="max-width: 520px" type="text" readonly="readonly" value="http://@Model.DomainName@Url.Action("Login", "Sso", new { Token = application.Token.ToString() })" />
                          <span class="input-group-btn">

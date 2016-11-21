@@ -35,16 +35,14 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [Route("Sso/Login/{token}")]
-        public async Task<IActionResult> Login(string token, string returnUrl)//1
+        public async Task<IActionResult> Login(string token, string returnUrl)
         {
             Guid guid;
             if (!Guid.TryParse(token, out guid)) return View(null);
 
             var app = await _context.Applications.FirstOrDefaultAsync(a => a.Token.Equals(guid));
             if (app == null)
-            {
                 return View("InvalidLoginToken");
-            }
 
             var model = new LoginViewModel {Application = app, ReturnUrl = returnUrl};
             return _signInManager.IsSignedIn(User) ? View("LoginContinue", model) : View(model);
@@ -69,10 +67,17 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                 return RedirectToAction("Login", new {token});
             }
 
+            var authLevel =
+                await _context.ApplicationUserHasAuthLevels.FirstOrDefaultAsync(
+                    auhal => (auhal.App.Id == app.Id) && (auhal.UserNumber == User.Identity.Name));
+
             var payload = new Dictionary<string, object>
             {
                 {"userNumber", userNumber},
-                {"expiry", DateTime.Now.AddSeconds(app.ValidFor).Ticks.ToString()}
+                {"expiry", DateTime.Now.AddSeconds(app.ValidFor).Ticks.ToString()},
+                {
+                    "authLevel", authLevel.AuthLevel
+                }
             };
 
             var secretKey = Encoding.UTF8.GetBytes(app.Secret);
@@ -83,13 +88,11 @@ namespace DaVinciCollegeAuthenticationService.Controllers
 
             var parametersToAdd = new Dictionary<string, string>
             {
-                {"token", jwt},
+                {"token", jwt}
             };
 
             if (returnUrl != null)
-            {
                 parametersToAdd.Add("returnUrl", returnUrl);
-            }
 
             var url = QueryHelpers.AddQueryString(app.LoginCallbackUrl, parametersToAdd);
             return RedirectPermanent(url);
@@ -107,10 +110,18 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             var app = await _context.Applications.FirstOrDefaultAsync(a => a.Token.Equals(guid));
             if (app == null) return BadRequest();
 
+            var authLevel =
+                await _context.ApplicationUserHasAuthLevels.FirstOrDefaultAsync(
+                    auhal => (auhal.App.Id == app.Id) && (auhal.UserNumber == User.Identity.Name));
+
+
             var payload = new Dictionary<string, object>
             {
                 {"userNumber", User.Identity.Name},
-                {"expiry", DateTime.Now.AddSeconds(app.ValidFor).Ticks.ToString()}
+                {"expiry", DateTime.Now.AddSeconds(app.ValidFor).Ticks.ToString()},
+                {
+                    "authLevel", authLevel.AuthLevel
+                }
             };
 
             var secretKey = Encoding.UTF8.GetBytes(app.Secret);
@@ -125,9 +136,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             };
 
             if (returnUrl != null)
-            {
                 parametersToAdd.Add("returnUrl", returnUrl);
-            }
 
             var url = QueryHelpers.AddQueryString(app.LoginCallbackUrl, parametersToAdd);
             return RedirectPermanent(url);
