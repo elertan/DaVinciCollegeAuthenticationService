@@ -44,7 +44,7 @@
                     @if (SignInManager.IsSignedIn(User))
                     {
                         <li><a asp-area="" asp-controller="Application" asp-action="Index"><i class="fa fa-rocket fa-fw" aria-hidden="true"></i>Applicaties</a></li>
-                        <li><a asp-area="" asp-controller="Excel" asp-action="Index"><i class="fa fa-file-excel-o fa-fw" aria-hidden="true"></i>Excel</a></li>
+                        <li><a asp-area="" asp-controller="Admin" asp-action="Index"><i class="fa fa-user-md fa-fw" aria-hidden="true"></i>Admin Panel</a></li>
                     }
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
