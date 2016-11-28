@@ -39,12 +39,10 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         [HttpPost]
         public async Task<IActionResult> PostExcelSheet(IFormFile file)
         {
-            byte[] fileBytes = null;
             var reader = new BinaryReader(file.OpenReadStream());
-            fileBytes = reader.ReadBytes((int) file.Length);
+            var fileBytes = reader.ReadBytes((int) file.Length);
 
             var fileDataResult = Encoding.UTF8.GetString(fileBytes);
-            ViewBag.text = fileDataResult;
             var rows = new List<string>();
             foreach (var item in fileDataResult.Split('"'))
             {

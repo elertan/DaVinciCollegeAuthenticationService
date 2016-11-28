@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 namespace DaVinciCollegeAuthenticationService.Models
 {
     // Add profile data for application users by adding properties to the ApplicationUser class
-    public class ApplicationUser : IdentityUser
+    public sealed class ApplicationUser : IdentityUser
     {
         public ApplicationUser()
         {
@@ -12,7 +12,10 @@ namespace DaVinciCollegeAuthenticationService.Models
         }
 
         public string UserNumber { get; set; }
-        public bool IsTeacher { get; set; }
-        public virtual ICollection<Application> Applications { get; set; }
+        public bool IsAdmin { get; set; }
+        public ICollection<Application> Applications { get; set; }
+        public string Firstname { get; set; }
+        public string Lastname { get; set; }
+        public string Prefix { get; set; }
     }
 }
