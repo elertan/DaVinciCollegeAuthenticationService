@@ -80,6 +80,10 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user != applicationToRemove.User) return RedirectToAction(nameof(Index));
 
+            var auhalRemove =
+                _context.ApplicationUserHasAuthLevels.Where(auhaul => auhaul.App.Id == applicationToRemove.Id);
+            _context.ApplicationUserHasAuthLevels.RemoveRange(auhalRemove);
+
             _context.Applications.Remove(_context.Applications.First(a => a.Id == applicationId));
             await _context.SaveChangesAsync();
 
