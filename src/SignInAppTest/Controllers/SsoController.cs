@@ -69,14 +69,14 @@ namespace DaVinciCollegeAuthenticationService.Controllers
 
             var authLevel =
                 await _context.ApplicationUserHasAuthLevels.FirstOrDefaultAsync(
-                    auhal => (auhal.App.Id == app.Id) && (auhal.UserNumber == User.Identity.Name));
+                    auhal => (auhal.App.Id == app.Id) && (auhal.UserNumber == userNumber));
 
             var payload = new Dictionary<string, object>
             {
                 {"userNumber", userNumber},
                 {"expiry", DateTime.Now.AddSeconds(app.ValidFor).Ticks.ToString()},
                 {
-                    "authLevel", authLevel.AuthLevel
+                    "authLevel", authLevel?.AuthLevel ?? 1
                 }
             };
 
@@ -120,7 +120,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                 {"userNumber", User.Identity.Name},
                 {"expiry", DateTime.Now.AddSeconds(app.ValidFor).Ticks.ToString()},
                 {
-                    "authLevel", authLevel.AuthLevel
+                    "authLevel", authLevel?.AuthLevel ?? 1
                 }
             };
 
