@@ -128,6 +128,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
 
         //
         // POST: /Account/LogOff
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogOff()
