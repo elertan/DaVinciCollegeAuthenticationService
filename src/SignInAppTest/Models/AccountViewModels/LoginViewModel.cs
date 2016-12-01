@@ -5,7 +5,7 @@ namespace DaVinciCollegeAuthenticationService.Models.AccountViewModels
     public class LoginViewModel
     {
         [Required]
-        [Display(Name = "Gebruikernummer")]
+        [Display(Name = "Gebruikernaam")]
         public string UserNumber { get; set; }
 
         [Required]

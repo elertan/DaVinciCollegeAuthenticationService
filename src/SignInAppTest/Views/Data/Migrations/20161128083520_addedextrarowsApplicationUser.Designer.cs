@@ -8,9 +8,10 @@ using DaVinciCollegeAuthenticationService.Data;
 namespace DaVinciCollegeAuthenticationService.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20161128083520_addedextrarowsApplicationUser")]
+    partial class addedextrarowsApplicationUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
@@ -145,7 +146,7 @@ namespace DaVinciCollegeAuthenticationService.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("UserName");
+                    b.Property<int>("UserNumber");
 
                     b.Property<Guid>("VertificationCode");
 

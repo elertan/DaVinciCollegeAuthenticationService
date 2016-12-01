@@ -1,0 +1,15 @@
+﻿@model DaVinciCollegeAuthenticationService.Models.AdminViewModels.ImportUsersFromCSVPostModel
+<h1>ExcelSheet</h1>
+
+@if (Model.SuccessType == DaVinciCollegeAuthenticationService.Models.AdminViewModels.SuccessType.Succeeded)
+{
+    <h2 style="color:green;">De gebruikers zijn aangemaakt</h2>
+}
+else if (Model.SuccessType == DaVinciCollegeAuthenticationService.Models.AdminViewModels.SuccessType.Failed)
+{
+    <h2 style="color:red;">Oeps er is iets mis gegaan er zijn geen veranderingen aangebracht</h2>
+}
+<form method="post" asp-action="ImportUsersFromCSVPost" asp-controller="AdminPanel" enctype="multipart/form-data">
+    <input type="file" name="file" />
+    <input type="submit" value="Upload" />
+</form>
