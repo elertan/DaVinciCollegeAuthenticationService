@@ -19,7 +19,6 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         private readonly ApplicationDbContext _context;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IEmailProvider _emailProvider;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
@@ -30,15 +29,13 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            ILoggerFactory loggerFactory,
-            IEmailProvider emailProvider)
+            ILoggerFactory loggerFactory)
         {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
-            _emailProvider = emailProvider;
             _logger = loggerFactory.CreateLogger<AccountController>();
         }
 
@@ -245,13 +242,27 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
-            var emailAddress = _emailProvider.GetEmailByUserNumber(model.UserNumber);
-            var vertificationCode = Guid.NewGuid();
-            var message = $"Beste {model.UserNumber},\n\nDruk op deze link om jouw account's wachtwoord te veranderen. http://localhost:2922/Account/ForgetPasswordVertification/{vertificationCode}\n\nAls jij deze aanvraag niet hebt gedaan, kan je deze mail negeren.\n\nMet vriendelijke groet,\n\nHet DaVinci Authservice Team";
-            await _emailSender.SendEmailAsync(emailAddress, "Account Password Reset", message);
-            _context.PasswordResets.Add(new PasswordReset { UserNumber = int.Parse(model.UserNumber), VertificationCode = vertificationCode, ValidTill = DateTime.Now.AddMinutes(30) });
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(ForgotPasswordConfirmation));
+            var applicationUser = _context.ApplicationUser.FirstOrDefault(a => a.UserName.ToLower() == model.UserName.ToLower());
+
+            if (applicationUser != null)
+            {
+                var vertificationCode = Guid.NewGuid();
+
+                var fullName = applicationUser.Firstname +  " ";
+                if (applicationUser.Prefix != string.Empty && applicationUser.Prefix != " ")
+                {
+                    fullName += applicationUser.Prefix + " ";
+                }
+                fullName += applicationUser.Lastname;
+
+                var message = $"Beste " + fullName + ",\n\nDruk op deze link om jouw account's wachtwoord te veranderen. http://localhost:2922/Account/ForgetPasswordVertification/" + vertificationCode + "\n\nAls jij deze aanvraag niet hebt gedaan, kan je deze mail negeren.\n\nMet vriendelijke groet,\n\nHet DaVinci Authservice Team";
+                await _emailSender.SendEmailAsync(applicationUser.Email, "Account Password Reset", message);
+                _context.PasswordResets.Add(new PasswordReset { UserName = model.UserName, VertificationCode = vertificationCode });
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(ForgotPasswordConfirmation));
+            }
+
+            return RedirectToAction(nameof(ForgotPasswordError));
         }
 
         [HttpGet]
@@ -276,7 +287,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgetPasswordVertification(ForgetPasswordVerificationModel forgetPasswordModel, string vertificationCode, string userNumber)
+        public async Task<IActionResult> ForgetPasswordVertification(ForgetPasswordVerificationModel forgetPasswordModel, string vertificationCode, string userName)
         {
             if (!ModelState.IsValid)
             {
@@ -292,9 +303,13 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                     var passwordReset = _context.PasswordResets.FirstOrDefault(p => p.VertificationCode == vertCode);
                     if (passwordReset != null)
                     {
-                        var userToChange = _context.Users.FirstOrDefault(u => u.UserName == userNumber.ToString());
-                        var code = await _userManager.GeneratePasswordResetTokenAsync(userToChange);
-                        var resetResult = await _userManager.ResetPasswordAsync(userToChange, code, forgetPasswordModel.NewPassword);
+                        var userToChange = _context.Users.FirstOrDefault(u => u.UserName.ToLower() == userName.ToLower());
+
+                        if (userToChange != null)
+                        {
+                            var code = await _userManager.GeneratePasswordResetTokenAsync(userToChange);
+                            var resetResult = await _userManager.ResetPasswordAsync(userToChange, code, forgetPasswordModel.NewPassword);
+                        }
                     }
                 }
             }
@@ -309,6 +324,14 @@ namespace DaVinciCollegeAuthenticationService.Controllers
         [AllowAnonymous]
         public IActionResult ForgotPasswordConfirmation()
         {
+            return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPasswordError()
+        {
+            ViewBag.Error = "Gebruiker bestaat niet";
             return View();
         }
 
