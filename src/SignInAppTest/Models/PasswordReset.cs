@@ -10,5 +10,6 @@ namespace DaVinciCollegeAuthenticationService.Models
         public int Id { get; set; }
         public int UserNumber { get; set; }
         public Guid VertificationCode { get; set; }
+        public DateTime ValidTill { get; set; }
     }
 }

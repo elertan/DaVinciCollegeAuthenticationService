@@ -249,7 +249,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             var vertificationCode = Guid.NewGuid();
             var message = $"Beste {model.UserNumber},\n\nDruk op deze link om jouw account's wachtwoord te veranderen. http://localhost:2922/Account/ForgetPasswordVertification/{vertificationCode}\n\nAls jij deze aanvraag niet hebt gedaan, kan je deze mail negeren.\n\nMet vriendelijke groet,\n\nHet DaVinci Authservice Team";
             await _emailSender.SendEmailAsync(emailAddress, "Account Password Reset", message);
-            _context.PasswordResets.Add(new PasswordReset() { UserNumber = int.Parse(model.UserNumber), VertificationCode = vertificationCode });
+            _context.PasswordResets.Add(new PasswordReset { UserNumber = int.Parse(model.UserNumber), VertificationCode = vertificationCode, ValidTill = DateTime.Now.AddMinutes(30) });
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(ForgotPasswordConfirmation));
         }
@@ -263,15 +263,14 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             if (Guid.TryParse(vertificationCode, out vertCode))
             {
                 var passwordReset = _context.PasswordResets.FirstOrDefault(p => p.VertificationCode == vertCode);
-                if (passwordReset != null)
+                if (passwordReset != null && passwordReset.ValidTill > DateTime.Now)
                 {
-                    return View(new ForgetPasswordVerificationModel() { PasswordReset = passwordReset });
+                    return View(new ForgetPasswordVerificationModel { PasswordReset = passwordReset });
                 }
             }
 
+            //The vertificationCode doesnt exist or has expired
             return RedirectToAction("Index", "Home");
-            //The vertificationCode doesnt exist
-
         }
 
         [HttpPost]

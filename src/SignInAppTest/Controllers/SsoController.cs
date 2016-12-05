@@ -83,7 +83,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             var secretKey = Encoding.UTF8.GetBytes(app.Secret);
             var jwt = JWT.Encode(payload, secretKey, JwsAlgorithm.HS256);
 
-            _context.Accesstokens.Add(new Accesstoken {App = app, Token = jwt});
+            _context.Accesstokens.Add(new Accesstoken {App = app, Token = jwt, ValidTill = DateTime.Now.AddSeconds(app.ValidFor)});
             await _context.SaveChangesAsync();
 
             var parametersToAdd = new Dictionary<string, string>
@@ -127,7 +127,7 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             var secretKey = Encoding.UTF8.GetBytes(app.Secret);
             var jwt = JWT.Encode(payload, secretKey, JwsAlgorithm.HS256);
 
-            _context.Accesstokens.Add(new Accesstoken {App = app, Token = jwt});
+            _context.Accesstokens.Add(new Accesstoken {App = app, Token = jwt, ValidTill = DateTime.Now.AddSeconds(app.ValidFor)});
             await _context.SaveChangesAsync();
 
             var parametersToAdd = new Dictionary<string, string>
@@ -187,16 +187,16 @@ namespace DaVinciCollegeAuthenticationService.Controllers
             var secretKey = Encoding.UTF8.GetBytes(app.Secret);
 
             var data = JWT.Decode<Dictionary<string, dynamic>>(token, secretKey, JwsAlgorithm.HS256);
-            var signedDateTime = new DateTime(Convert.ToInt64(data["expiry"]));
 
             // Expiry is still not reached?
-            if ((signedDateTime - DateTime.Now).Ticks > 0)
+            if (accessToken.ValidTill > DateTime.Now)
             {
                 if (!app.ExtendExpiryOnRequest) return Json(new {token});
 
                 data["expiry"] = DateTime.Now.AddSeconds(app.ValidFor).Ticks.ToString();
                 token = JWT.Encode(data, secretKey, JwsAlgorithm.HS256);
                 accessToken.Token = token;
+                accessToken.ValidTill = DateTime.Now.AddSeconds(app.ValidFor);
                 await _context.SaveChangesAsync();
                 return Json(new {token});
             }

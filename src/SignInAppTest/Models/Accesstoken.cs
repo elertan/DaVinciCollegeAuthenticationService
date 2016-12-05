@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace DaVinciCollegeAuthenticationService.Models
 {
@@ -11,5 +12,7 @@ namespace DaVinciCollegeAuthenticationService.Models
 
         [Required]
         public virtual Application App { get; set; }
+
+        public DateTime ValidTill { get; set; }
     }
 }

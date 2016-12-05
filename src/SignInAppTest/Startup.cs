@@ -13,6 +13,8 @@ namespace DaVinciCollegeAuthenticationService
 {
     public class Startup
     {
+        private DatabaseManager _dbManager;
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -43,6 +45,11 @@ namespace DaVinciCollegeAuthenticationService
 
             services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            // Create cleanup for database fields
+            var dbContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            dbContextOptionsBuilder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            _dbManager = new DatabaseManager(new ApplicationDbContext(dbContextOptionsBuilder.Options));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()

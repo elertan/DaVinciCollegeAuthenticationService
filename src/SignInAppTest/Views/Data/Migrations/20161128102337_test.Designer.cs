@@ -8,9 +8,10 @@ using DaVinciCollegeAuthenticationService.Data;
 namespace DaVinciCollegeAuthenticationService.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20161128102337_test")]
+    partial class test
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
@@ -26,8 +27,6 @@ namespace DaVinciCollegeAuthenticationService.Data.Migrations
 
                     b.Property<string>("Token")
                         .IsRequired();
-
-                    b.Property<DateTime>("ValidTill");
 
                     b.HasKey("Id");
 
@@ -148,8 +147,6 @@ namespace DaVinciCollegeAuthenticationService.Data.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("UserNumber");
-
-                    b.Property<DateTime>("ValidTill");
 
                     b.Property<Guid>("VertificationCode");
 
