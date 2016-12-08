@@ -309,6 +309,15 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                         {
                             var code = await _userManager.GeneratePasswordResetTokenAsync(userToChange);
                             var resetResult = await _userManager.ResetPasswordAsync(userToChange, code, forgetPasswordModel.NewPassword);
+                            if (!resetResult.Succeeded)
+                            {
+                                foreach (var error in resetResult.Errors)
+                                {
+                                    ModelState.AddModelError(error.Code, error.Description);
+                                }
+                                forgetPasswordModel.PasswordReset = _context.PasswordResets.FirstOrDefault(p => p.VertificationCode == Guid.Parse(vertificationCode));
+                                return View(forgetPasswordModel);
+                            }
                         }
                     }
                 }
