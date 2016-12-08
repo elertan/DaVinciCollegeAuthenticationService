@@ -11,7 +11,7 @@ namespace DaVinciCollegeAuthenticationService.Data.Migrations
             migrationBuilder.DropColumn(
                 name: "IsTeacher",
                 table: "AspNetUsers");
-
+            
             migrationBuilder.AddColumn<string>(
                 name: "Firstname",
                 table: "AspNetUsers",

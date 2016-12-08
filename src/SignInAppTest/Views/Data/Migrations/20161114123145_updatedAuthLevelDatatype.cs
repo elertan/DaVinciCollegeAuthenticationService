@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DaVinciCollegeAuthenticationService.Data.Migrations
 {
@@ -10,61 +9,66 @@ namespace DaVinciCollegeAuthenticationService.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_ApplicationUserHasAuthLevel_AspNetUsers_UserId",
-                table: "ApplicationUserHasAuthLevel");
+                "FK_ApplicationUserHasAuthLevel_AspNetUsers_UserId",
+                "ApplicationUserHasAuthLevel");
 
             migrationBuilder.DropIndex(
-                name: "IX_ApplicationUserHasAuthLevel_UserId",
-                table: "ApplicationUserHasAuthLevel");
+                "IX_ApplicationUserHasAuthLevel_UserId",
+                "ApplicationUserHasAuthLevel");
 
             migrationBuilder.DropColumn(
-                name: "UserId",
-                table: "ApplicationUserHasAuthLevel");
+                "UserId",
+                "ApplicationUserHasAuthLevel");
+
+            try
+            {
+                migrationBuilder.DropTable("PasswordResets");
+            }
+            catch
+            {
+            }
 
             migrationBuilder.CreateTable(
-                name: "PasswordResets",
-                columns: table => new
+                "PasswordResets",
+                table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     UserNumber = table.Column<int>(nullable: false),
                     VertificationCode = table.Column<Guid>(nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PasswordResets", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_PasswordResets", x => x.Id); });
 
             migrationBuilder.AddColumn<string>(
-                name: "UserNumber",
-                table: "ApplicationUserHasAuthLevel",
+                "UserNumber",
+                "ApplicationUserHasAuthLevel",
                 nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "UserNumber",
-                table: "ApplicationUserHasAuthLevel");
+                "UserNumber",
+                "ApplicationUserHasAuthLevel");
 
             migrationBuilder.DropTable(
-                name: "PasswordResets");
+                "PasswordResets");
 
             migrationBuilder.AddColumn<string>(
-                name: "UserId",
-                table: "ApplicationUserHasAuthLevel",
+                "UserId",
+                "ApplicationUserHasAuthLevel",
                 nullable: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApplicationUserHasAuthLevel_UserId",
-                table: "ApplicationUserHasAuthLevel",
-                column: "UserId");
+                "IX_ApplicationUserHasAuthLevel_UserId",
+                "ApplicationUserHasAuthLevel",
+                "UserId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ApplicationUserHasAuthLevel_AspNetUsers_UserId",
-                table: "ApplicationUserHasAuthLevel",
-                column: "UserId",
-                principalTable: "AspNetUsers",
+                "FK_ApplicationUserHasAuthLevel_AspNetUsers_UserId",
+                "ApplicationUserHasAuthLevel",
+                "UserId",
+                "AspNetUsers",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }
