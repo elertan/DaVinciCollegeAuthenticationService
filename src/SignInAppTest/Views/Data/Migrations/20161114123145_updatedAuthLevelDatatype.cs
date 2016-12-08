@@ -20,13 +20,13 @@ namespace DaVinciCollegeAuthenticationService.Data.Migrations
                 "UserId",
                 "ApplicationUserHasAuthLevel");
 
-            try
-            {
-                migrationBuilder.DropTable("PasswordResets");
-            }
-            catch
-            {
-            }
+            //try
+            //{
+            //    migrationBuilder.DropTable("PasswordResets");
+            //}
+            //catch
+            //{
+            //}
 
             migrationBuilder.CreateTable(
                 "PasswordResets",

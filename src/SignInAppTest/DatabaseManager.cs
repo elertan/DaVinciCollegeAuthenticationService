@@ -19,6 +19,7 @@ namespace DaVinciCollegeAuthenticationService
 
         public void RemoveExpiredData(object state)
         {
+            return;
             var expiredResets = _context.PasswordResets.Where(pr => pr.ValidTill < DateTime.Now).ToList();
             _context.PasswordResets.RemoveRange(expiredResets);
 

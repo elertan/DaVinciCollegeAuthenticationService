@@ -255,9 +255,9 @@ namespace DaVinciCollegeAuthenticationService.Controllers
                 }
                 fullName += applicationUser.Lastname;
 
-                var message = $"Beste " + fullName + ",\n\nDruk op deze link om jouw account's wachtwoord te veranderen. http://localhost:2922/Account/ForgetPasswordVertification/" + vertificationCode + "\n\nAls jij deze aanvraag niet hebt gedaan, kan je deze mail negeren.\n\nMet vriendelijke groet,\n\nHet DaVinci Authservice Team";
+                var message = $"Beste " + fullName + ",\n\nDruk op deze link om jouw account's wachtwoord te veranderen. http://localhost:2922/Account/ForgetPasswordVertification/" + vertificationCode + "\n\nAls jij deze aanvraag niet hebt gedaan, kan je deze mail negeren.\n\n Je hebt 30 minuten de tijd om het wachtwoord aan te vragen/resetten\n\nMet vriendelijke groet,\n\nHet DaVinci Authservice Team";
                 await _emailSender.SendEmailAsync(applicationUser.Email, "Account Password Reset", message);
-                _context.PasswordResets.Add(new PasswordReset { UserName = model.UserName, VertificationCode = vertificationCode });
+                _context.PasswordResets.Add(new PasswordReset { UserName = model.UserName, VertificationCode = vertificationCode, ValidTill = DateTime.Now.AddMinutes(30) });
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(ForgotPasswordConfirmation));
             }
